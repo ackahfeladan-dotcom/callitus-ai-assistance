@@ -9,5 +9,8 @@
     { "src": "/api/chat", "dest": "index.js" },
     { "handle": "filesystem" },
     { "src": "/(.*)", "dest": "public/$1" }
-  ]
+  ],
+  "env": {
+    "VERCEL_FORCE_NODEJS_STREAMING": "true"
+  }
 }
