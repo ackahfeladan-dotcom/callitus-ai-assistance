@@ -1,0 +1,13 @@
+{
+  "name": "my-ai-project",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Local JS AI Assistant",
+  "main": "index.js",
+  "dependencies": {
+    "@langchain/core": "^1.1.48",
+    "@langchain/ollama": "^1.2.7",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1"
+  }
+}
