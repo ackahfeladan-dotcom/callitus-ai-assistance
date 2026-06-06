@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+ <script src="https://jsdelivr.net"></script>   
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI Assistant by Callitus</title>
@@ -68,12 +69,12 @@
         </div>
     </div>
 
-   <script>
+  <script>
     const chatContainer = document.getElementById('chat-container');
     const userInput = document.getElementById('user-input');
     const sendBtn = document.getElementById('send-btn');
 
-    // 1. Maintain conversation memory state across multiple turns
+    // Maintain conversation memory state across multiple turns
     let chatHistory = [];
 
     async function sendMessage() {
@@ -83,13 +84,13 @@
         userInput.value = '';
 
         // Append User Message Row on the Right Side
-        appendRow(text, 'user-wrapper', 'user-content', 'You');
+        appendRow(marked.parse(text), 'user-wrapper', 'user-content', 'You');
 
         // Append Placeholder AI Row on the Left Side
         const aiContentElement = appendRow('', 'ai-wrapper', 'ai-content', 'Assistant');
 
         try {
-            // 2. Pass current message alongside previous message logs to backend API
+            // Pass current message alongside previous message logs to backend API
             const response = await fetch('/api/chat', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -110,12 +111,12 @@
                 const chunk = decoder.decode(value, { stream: true });
                 accumulatedAiResponse += chunk;
                 
-                // Append text chunks directly to your container style
-                aiContentElement.appendChild(document.createTextNode(chunk));
+                // Parse the accumulated text stream into clean HTML structure
+                aiContentElement.innerHTML = `<span class="avatar-label">Assistant</span>${marked.parse(accumulatedAiResponse)}`;
                 chatContainer.scrollTop = chatContainer.scrollHeight;
             }
 
-            // 3. Save finalized message exchange pair into memory storage
+            // Save finalized message exchange pair into memory storage
             chatHistory.push({ role: "user", text: text });
             chatHistory.push({ role: "assistant", text: accumulatedAiResponse });
 
@@ -125,13 +126,13 @@
         }
     }
 
-    function appendRow(text, wrapperClass, contentClass, userLabel) {
+    function appendRow(htmlContent, wrapperClass, contentClass, userLabel) {
         const wrapperDiv = document.createElement('div');
         wrapperDiv.className = `chat-wrapper ${wrapperClass}`;
 
         const contentDiv = document.createElement('div');
         contentDiv.className = `message-content ${contentClass}`;
-        contentDiv.innerHTML = `<span class="avatar-label">${userLabel}</span>${text}`;
+        contentDiv.innerHTML = `<span class="avatar-label">${userLabel}</span>${htmlContent}`;
 
         wrapperDiv.appendChild(contentDiv);
         chatContainer.appendChild(wrapperDiv);
