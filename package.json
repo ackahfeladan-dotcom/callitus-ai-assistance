@@ -1,14 +1,15 @@
 {
-  "name": "my-ai-project",
+  "name": "callitus-ai-assistant",
   "version": "1.0.0",
   "type": "module",
-  "description": "Local JS AI Assistant",
-  "main": "index.js",
+  "main": "api/chat.js",
+  "scripts": {
+    "start": "node api/chat.js"
+  },
   "dependencies": {
-    "@langchain/core": "^1.1.48",
-    "@langchain/groq": "^1.2.1",
-    "@langchain/ollama": "^1.2.7",
-    "dotenv": "^17.4.2",
-    "express": "^5.2.1"
+    "@langchain/core": "^0.3.0",
+    "@langchain/groq": "^0.1.2",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2"
   }
 }
