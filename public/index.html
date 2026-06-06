@@ -68,64 +68,79 @@
         </div>
     </div>
 
-    <script>
-        const chatContainer = document.getElementById('chat-container');
-        const userInput = document.getElementById('user-input');
-        const sendBtn = document.getElementById('send-btn');
+   <script>
+    const chatContainer = document.getElementById('chat-container');
+    const userInput = document.getElementById('user-input');
+    const sendBtn = document.getElementById('send-btn');
 
-        async function sendMessage() {
-            const text = userInput.value.trim();
-            if (!text) return;
+    // 1. Maintain conversation memory state across multiple turns
+    let chatHistory = [];
 
-            // Append User Message Row on the Right Side
-            appendRow(text, 'user-wrapper', 'user-content', 'You');
-            userInput.value = '';
+    async function sendMessage() {
+        const text = userInput.value.trim();
+        if (!text) return;
 
-            // Append Placeholder AI Row on the Left Side
-            const aiContentElement = appendRow('', 'ai-wrapper', 'ai-content', 'Assistant');
+        userInput.value = '';
 
-            try {
-                const response = await fetch('/api/chat', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ message: text })
-                });
+        // Append User Message Row on the Right Side
+        appendRow(text, 'user-wrapper', 'user-content', 'You');
+
+        // Append Placeholder AI Row on the Left Side
+        const aiContentElement = appendRow('', 'ai-wrapper', 'ai-content', 'Assistant');
+
+        try {
+            // 2. Pass current message alongside previous message logs to backend API
+            const response = await fetch('/api/chat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ 
+                    message: text,
+                    history: chatHistory 
+                })
+            });
+
+            const reader = response.body.getReader();
+            const decoder = new TextDecoder();
+            let accumulatedAiResponse = "";
+
+            while (true) {
+                const { done, value } = await reader.read();
+                if (done) break;
+
+                const chunk = decoder.decode(value, { stream: true });
+                accumulatedAiResponse += chunk;
                 
-                const reader = response.body.getReader();
-                const decoder = new TextDecoder();
-                
-                aiContentElement.innerHTML = `<span class="avatar-label">Assistant</span>`;
-
-                while (true) {
-                    const { done, value } = await reader.read();
-                    if (done) break;
-                    
-                    const chunk = decoder.decode(value, { stream: true });
-                    aiContentElement.appendChild(document.createTextNode(chunk));
-                    chatContainer.scrollTop = chatContainer.scrollHeight;
-                }
-            } catch (error) {
-                aiContentElement.innerHTML = `<span class="avatar-label">Assistant</span>Error loading live stream.`;
+                // Append text chunks directly to your container style
+                aiContentElement.appendChild(document.createTextNode(chunk));
+                chatContainer.scrollTop = chatContainer.scrollHeight;
             }
-        }
 
-        function appendRow(text, wrapperClass, contentClass, userLabel) {
-            const wrapperDiv = document.createElement('div');
-            wrapperDiv.className = `chat-wrapper ${wrapperClass}`;
-            
-            const contentDiv = document.createElement('div');
-            contentDiv.className = `message-content ${contentClass}`;
-            contentDiv.innerHTML = `<span class="avatar-label">${userLabel}</span>${text}`;
-            
-            wrapperDiv.appendChild(contentDiv);
-            chatContainer.appendChild(wrapperDiv);
-            chatContainer.scrollTop = chatContainer.scrollHeight;
-            return contentDiv;
+            // 3. Save finalized message exchange pair into memory storage
+            chatHistory.push({ role: "user", text: text });
+            chatHistory.push({ role: "assistant", text: accumulatedAiResponse });
+
+        } catch (error) {
+            console.error("Stream reader execution crash:", error);
+            aiContentElement.innerHTML = '<span class="avatar-label">Assistant</span>Error loading message.';
         }
-        
-            sendBtn.addEventListener('click', sendMessage);
-            userInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') sendMessage(); });
-        
-    </script>
+    }
+
+    function appendRow(text, wrapperClass, contentClass, userLabel) {
+        const wrapperDiv = document.createElement('div');
+        wrapperDiv.className = `chat-wrapper ${wrapperClass}`;
+
+        const contentDiv = document.createElement('div');
+        contentDiv.className = `message-content ${contentClass}`;
+        contentDiv.innerHTML = `<span class="avatar-label">${userLabel}</span>${text}`;
+
+        wrapperDiv.appendChild(contentDiv);
+        chatContainer.appendChild(wrapperDiv);
+        chatContainer.scrollTop = chatContainer.scrollHeight;
+        return contentDiv;
+    }
+
+    sendBtn.addEventListener('click', sendMessage);
+    userInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') sendMessage(); });
+</script>
 </body>
 </html>
