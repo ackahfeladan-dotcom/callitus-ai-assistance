@@ -2,14 +2,8 @@
   "name": "callitus-ai-assistant",
   "version": "1.0.0",
   "type": "module",
-  "main": "api/chat.js",
-  "scripts": {
-    "start": "node api/chat.js"
-  },
   "dependencies": {
     "@langchain/core": "^0.3.0",
-    "@langchain/groq": "^0.1.2",
-    "dotenv": "^16.4.5",
-    "express": "^4.19.2"
+    "@langchain/groq": "^0.1.2"
   }
 }
