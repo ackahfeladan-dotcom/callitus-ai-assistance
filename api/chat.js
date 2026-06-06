@@ -1,29 +1,49 @@
 import { ChatGroq } from "@langchain/groq";
 
-// Clear out Express. Vercel runs this function natively when someone calls /api/chat
-const model = new ChatGroq({
-  apiKey: process.env.GROQ_API_KEY,
-  modelName: "llama-3.3-70b-versatile",
-  temperature: 0.3,
-});
+export const config = {
+  runtime: 'edge', 
+};
 
-export default async function handler(req, res) {
-  if (req.method !== "POST") return res.status(405).send("Method Not Allowed");
-
-  const userMessage = req.body.message;
-  if (!userMessage) return res.status(400).send("No message provided");
-
-  res.setHeader("Content-Type", "text/plain; charset=utf-8");
-  res.setHeader("Transfer-Encoding", "chunked");
+export default async function handler(req) {
+  if (req.method !== "POST") {
+    return new Response("Method Not Allowed", { status: 405 });
+  }
 
   try {
-    const stream = await model.stream(userMessage);
-    for await (const chunk of stream) {
-      res.write(chunk.content || "");
+    const { message } = await req.json(); 
+    if (!message) {
+      return new Response("No message provided", { status: 400 });
     }
-    res.end();
+
+    const model = new ChatGroq({
+      apiKey: process.env.GROQ_API_KEY,
+      modelName: "llama-3.3-70b-versatile",
+      temperature: 0.3,
+    });
+
+    const encoder = new TextEncoder();
+    const stream = new ReadableStream({
+      async start(controller) {
+        try {
+          const chatStream = await model.stream(message);
+          for await (const chunk of chatStream) {
+            const text = chunk.content || ""; 
+            controller.enqueue(encoder.encode(text));
+          }
+          controller.close();
+        } catch (err) {
+          controller.error(err);
+        }
+      },
+    });
+
+    return new Response(stream, {
+      headers: {
+        "Content-Type": "text/plain; charset=utf-8",
+      },
+    });
+
   } catch (error) {
-    console.error("Cloud streaming crash:", error.message);
-    res.status(500).end("Failed to connect to cloud AI instance.");
+    return new Response("Failed to connect to cloud AI instance.", { status: 500 });
   }
 }
