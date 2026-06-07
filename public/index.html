@@ -275,44 +275,46 @@
             const decoder = new TextDecoder();
             let accumulatedAiResponse = "";
 
-            while (true) {
-                const { done, value } = await reader.read();
-                if (done) break;
+while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
 
-             const chunk = decoder.decode(value, { stream: true });
+      const chunk = decoder.decode(value, { stream: true });
+      
+      const lines = chunk.split('\n');
+      for (const line of lines) {
+        if (line.startsWith('data: ')) {
+          const dataStr = line.replace('data: ', '').trim();
+          if (dataStr === '[DONE]') break;
 
-// Safely extract the words whether the backend streams raw text or premium JSON chunks
-const lines = chunk.split('\n');
-for (const line of lines) {
-  if (line.startsWith('data: ')) {
-    const dataStr = line.replace('data: ', '').trim();
-    if (dataStr === '[DONE]') break;
-    try {
-      const parsed = JSON.parse(dataStr);
-      if (parsed.text) accumulatedAiResponse += parsed.text;
-    } catch (e) {
-      accumulatedAiResponse += dataStr; // Fallback if it's not a JSON string
+          try {
+            const parsed = JSON.parse(dataStr);
+            if (parsed.text) {
+              accumulatedAiResponse += parsed.text;
+            }
+          } catch (e) {
+            accumulatedAiResponse += dataStr;
+          }
+        } else if (!line.startsWith('data:') && line.trim()) {
+          accumulatedAiResponse += line;
+        }
+      }
+
+      // Format headers and bold text on every streaming tick
+      let formattedText = accumulatedAiResponse
+        .replace(/###\s+(.*?)(?:\n|<br>|$)/g, '<h3 style="margin: 12px 0; font-size: 1.25rem; color: #ffffff;">$1</h3>')
+        .replace(/\\(.?)\\*/g, '<strong style="color: #ffffff; font-weight: 600;">$1</strong>')
+        .replace(/(?:\r\n|\r|\n)/g, '<br>');
+
+      aiContentElement.innerHTML = `
+        <span class="avatar-label" style="display: block; font-weight: bold; margin-bottom: 6px; color: #888;">Assistant</span>
+        <div style="line-height: 1.6; color: #e3e3e3; white-space: pre-wrap; word-break: break-word;">${formattedText}</div>
+      `;
+      chatContainer.scrollTop = chatContainer.scrollHeight;
     }
-  } else if (!line.startsWith('data:') && line.trim()) {
-    accumulatedAiResponse += line; // Fallback for raw text chunks
-  }
-}
-// Real-time premium rendering with inline typography parsing
-    let formattedText = accumulatedAiResponse
-      .replace(/###\s+(.*?)(?:\n|<br>|$)/g, '<h3 style="margin: 12px 0; font-size: 1.25rem; color: #ffffff;">$1</h3>')
-      .replace(/\\(.?)\\//g, '<strong style="color: #ffffff; font-weight: 600;">$1</strong>')
-      .replace(/(?:\r\n|\r|\n)/g, '<br>');
 
-    aiContentElement.innerHTML = `
-      <span class="avatar-label" style="display: block; font-weight: bold; margin-bottom: 6px; color: #888;">Assistant</span>
-      <div style="line-height: 1.6; color: #e3e3e3; white-space: pre-wrap; word-break: break-word;">${formattedText}</div>
-    `;
-    chatContainer.scrollTop = chatContainer.scrollHeight;
-    }
-            
-        
-// --- 1. INITIALIZE ACCUMULATED STREAM TEXT DATA ---
-        let mainContent = accumulatedAiResponse;
+    // --- 1. INITIALIZE ACCUMULATED STREAM TEXT DATA ---
+    let mainContent = accumulatedAiResponse;
             
             // --- ADVANCED BLUEPRINT CONSTRUCT INTERCEPTOR ---
  if (accumulatedAiResponse.includes("└──") || accumulatedAiResponse.includes("├──") || accumulatedAiResponse.toUpperCase().includes("FILETREE")) {
