@@ -393,9 +393,13 @@ while (true) {
                 });
             }
         }
-aiContentElement.innerHTML = `<span class="avatar-label">Assistant</span>${accumulatedAiResponse}`;
-chatContainer.scrollTop = chatContainer.scrollHeight;
-
+// Cleans out raw bracket action text tags and preserves proper paragraph layout blocks
+    let finalCleanContent = accumulatedAiResponse.replace(/\[KANBAN:.*?\]/g, '').trim();
+    aiContentElement.innerHTML = `
+      <span class="avatar-label" style="display: block; font-weight: bold; margin-bottom: 6px; color: #888;">Assistant</span>
+      <div style="line-height: 1.6; color: #e3e3e3; white-space: pre-wrap; word-break: break-word;">${finalCleanContent}</div>
+    `;
+    chatContainer.scrollTop = chatContainer.scrollHeight;
         let suggestions = [];
 // --- SMART TEXT KANBAN PARSING LOGIC ---
         if (mainContent.includes("To Do") || mainContent.includes("To-Do")) {
