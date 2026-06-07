@@ -393,13 +393,44 @@ while (true) {
                 });
             }
         }
-// Cleans out raw bracket action text tags and preserves proper paragraph layout blocks
-    let finalCleanContent = accumulatedAiResponse.replace(/\[KANBAN:.*?\]/g, '').trim();
+// Cleans out raw bracket action tags safely
+    let finalCleanContent = accumulatedAiResponse;
+    if (finalCleanContent.includes("[KANBAN:")) {
+      const kanbanIdx = finalCleanContent.indexOf("[KANBAN:");
+      finalCleanContent = finalCleanContent.substring(0, kanbanIdx).trim();
+    }
+
+    // Built-in Premium Document Typography Layout Processor
+    let paragraphs = finalCleanContent.split("\n");
+    let parsedHTML = "";
+
+    paragraphs.forEach(p => {
+      let line = p.trim();
+      if (!line) return;
+
+      // Formats ### Headers cleanly into distinct section blocks
+      if (line.startsWith("### ")) {
+        parsedHTML += <h3 style="margin: 18px 0 8px 0; font-size: 1.25rem; color: #ffffff; font-weight: 600; border-bottom: 1px solid #2f2f2f; padding-bottom: 4px;">${line.replace("### ", "")}</h3>;
+      } 
+      // Formats Bullet items into indented listing rows
+      else if (line.startsWith("- ") || line.startsWith("* ")) {
+        let cleanItem = line.substring(2);
+        parsedHTML += <li style="margin: 6px 0 6px 20px; list-style-type: disc; color: #e3e3e3;">${cleanItem}</li>;
+      } 
+      // Standard message paragraph blocks
+      else {
+        // Formats *bold text* phrases cleanly without regex conflicts
+        while (line.includes("**")) {
+          line = line.replace("*", '<strong style="color: #ffffff; font-weight: 600;">').replace("*", "</strong>");
+        }
+        parsedHTML += <p style="margin: 0 0 12px 0; line-height: 1.7; color: #e3e3e3; font-size: 0.95rem;">${line}</p>;
+      }
+    });
+
     aiContentElement.innerHTML = `
-      <span class="avatar-label" style="display: block; font-weight: bold; margin-bottom: 6px; color: #888;">Assistant</span>
-      <div style="line-height: 1.6; color: #e3e3e3; white-space: pre-wrap; word-break: break-word;">${finalCleanContent}</div>
+      <span class="avatar-label" style="display: block; font-weight: bold; margin-bottom: 10px; color: #aaa; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px;">Assistant</span>
+      <div class="premium-document-layout" style="word-break: break-word;">${parsedHTML}</div>
     `;
-    chatContainer.scrollTop = chatContainer.scrollHeight;
         let suggestions = [];
 // --- SMART TEXT KANBAN PARSING LOGIC ---
         if (mainContent.includes("To Do") || mainContent.includes("To-Do")) {
