@@ -408,7 +408,7 @@ while (true) {
       let line = p.trim();
       if (!line) return;
 
-      // Formats ### Headers cleanly into distinct section blocks
+     // Formats ### Headers cleanly into distinct section blocks
       if (line.startsWith("### ")) {
         parsedHTML += <h3 style="margin: 18px 0 8px 0; font-size: 1.25rem; color: #ffffff; font-weight: 600; border-bottom: 1px solid #2f2f2f; padding-bottom: 4px;">${line.replace("### ", "")}</h3>;
       } 
@@ -419,11 +419,12 @@ while (true) {
       } 
       // Standard message paragraph blocks
       else {
-        // Formats *bold text* phrases cleanly without regex conflicts
-        while (line.includes("**")) {
-          line = line.replace("*", '<strong style="color: #ffffff; font-weight: 600;">').replace("*", "</strong>");
+        // Formats bold text phrases cleanly
+        let processedLine = line;
+        while (processedLine.includes("**")) {
+          processedLine = processedLine.replace("*", '<strong style="color: #ffffff; font-weight: 600;">').replace("*", "</strong>");
         }
-        parsedHTML += <p style="margin: 0 0 12px 0; line-height: 1.7; color: #e3e3e3; font-size: 0.95rem;">${line}</p>;
+        parsedHTML += <p style="margin: 0 0 12px 0; line-height: 1.7; color: #e3e3e3; font-size: 0.95rem;">${processedLine}</p>;
       }
     });
 
