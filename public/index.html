@@ -160,26 +160,29 @@
                 chatContainer.scrollTop = chatContainer.scrollHeight;
             }
 
-                    
-  // 1. Separate text response content from chips formatting
-        let mainContent = accumulatedAIResponse;
+  // --- CORRECTED VARIABLE NAME CASING ---
+        let mainContent = accumulatedAiResponse;
         let suggestions = [];
 
-        if (accumulatedAIResponse.includes("|||")) {
-            const parts = accumulatedAIResponse.split("|||");
-            mainContent = parts[0].trim();
-            const chipsSection = parts[1];
-            suggestions = chipsSection.split("|").map(s => s.trim()).filter(Boolean);
+        if (accumulatedAiResponse.includes("|||")) {
+            const parts = accumulatedAiResponse.split("|||");
+            // Select index 0 for the main text block
+            mainContent = parts[0] ? parts[0].trim() : accumulatedAiResponse;
+            
+            // Select index 1 for the suggestions string
+            const chipsSection = parts[1] ? parts[1] : "";
+            if (chipsSection) {
+                suggestions = chipsSection.split("|").map(s => s.trim()).filter(Boolean);
+            }
 
-            // Clean up the text displayed inside the chat bubble
+            // Update the screen text layout to clean out formatting strings
             aiContentElement.innerHTML = `<span class="avatar-label">Assistant</span>${mainContent}`;
         }
 
-        // 2. Clear out any previous suggestions container before adding new ones
+        // Render the suggestion chips layout if present
         const oldChips = document.querySelector(".chips-container");
         if (oldChips) oldChips.remove();
 
-        // 3. Render the new action items
         if (suggestions.length > 0) {
             const chipsContainer = document.createElement("div");
             chipsContainer.className = "chips-container";
@@ -193,7 +196,7 @@
                     const textInput = document.querySelector('#input-wrapper input') || document.querySelector('input');
                     if (textInput) {
                         textInput.value = text;
-                        const sendBtn = document.querySelector('#input-area-container button') || document.querySelector('.new-chat-btn');
+                        const sendBtn = document.querySelector('#input-area-container button') || document.querySelector('button');
                         if (sendBtn) sendBtn.click();
                     }
                     chipsContainer.remove();
@@ -202,12 +205,14 @@
                 chipsContainer.appendChild(chip);
             });
 
+            // Append directly to the chatContainer variable used on line 160
             chatContainer.appendChild(chipsContainer);
             chatContainer.scrollTop = chatContainer.scrollHeight;
         }
 
-        // Update conversation state history array securely
-        chatHistory.push({ role: "assistant", text: mainContent });
+        // Save cleanly formatted text to history array
+        chatHistory.push({ role: "assistant", text: mainContent });                  
+  
 
         } catch (error) {
             console.error("Critical core messaging flow crash:", error);
