@@ -286,6 +286,10 @@
                 aiContentElement.innerHTML = `<span class="avatar-label">Assistant</span>${renderChatGPTLayout(accumulatedAiResponse)}`;
                 chatContainer.scrollTop = chatContainer.scrollHeight;
             }
+        
+// --- 1. INITIALIZE ACCUMULATED STREAM TEXT DATA ---
+        let mainContent = accumulatedAiResponse;
+            
             // --- ADVANCED BLUEPRINT CONSTRUCT INTERCEPTOR ---
         if (accumulatedAiResponse.includes("[FILETREE:")) {
             const startIdx = accumulatedAiResponse.indexOf("[FILETREE:");
@@ -356,8 +360,6 @@
             }
         }
 
-// --- 1. INITIALIZE ACCUMULATED STREAM TEXT DATA ---
-        let mainContent = accumulatedAiResponse;
         let suggestions = [];
 // --- SMART TEXT KANBAN PARSING LOGIC ---
         if (mainContent.includes("To Do") || mainContent.includes("To-Do")) {
