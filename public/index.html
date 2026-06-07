@@ -216,17 +216,32 @@
 // --- 1. INITIALIZE ACCUMULATED STREAM TEXT DATA ---
         let mainContent = accumulatedAiResponse;
         let suggestions = [];
-// --- CORRECTED REGEX INDEXING BLOCK ---
-        if (mainContent.includes("[KANBAN:")) {
-            const match = mainContent.match(/\[KANBAN:\s*([^\]]+)\]/);
-            if (match && match[1]) {
-                // Fix: Access the first capture group index explicitly!
-                const tasksRaw = match[1]; 
-                const tasks = tasksRaw.split("|").map(t => t.trim()).filter(Boolean);
+// --- SMART TEXT KANBAN PARSING LOGIC ---
+        if (mainContent.includes("To Do") || mainContent.includes("To-Do")) {
+            // Extract everything from "To Do" onwards
+            const todoIndex = mainContent.indexOf("To Do");
+            const kanbanText = mainContent.substring(todoIndex);
+            
+            // Clean up the text displayed on screen by cutting off the raw list text
+            mainContent = mainContent.substring(0, todoIndex).trim();
+            aiContentElement.innerHTML = `<span class="avatar-label">Assistant</span>${mainContent}`;
 
-                // Strip the bracket string completely from the text bubble
-                mainContent = mainContent.replace(/\[KANBAN:\s*([^\]]+)\]/, "").trim();
+            // Parse individual lines into a clean array of tasks
+            const lines = kanbanText.split('\n').map(l => l.trim()).filter(Boolean);
+            let tasks = [];
+            
+            // Collect any bullet points or lines that belong under the "To Do" section
+            for (let i = 1; i < lines.length; i++) {
+                const line = lines[i];
+                if (line.includes("In Progress") || line.includes("Done")) break;
+                
+                // Strip out markdown list markers like -, *, or 1.
+                const cleanTask = line.replace(/^[\s*\-\d\.\/]+/, '').trim();
+                if (cleanTask) tasks.push(cleanTask);
+            }
 
+            // Construct the Kanban Board DOM structure layout directly
+            if (tasks.length > 0) {
                 const board = document.createElement("div");
                 board.className = "kanban-board";
                 board.innerHTML = `
