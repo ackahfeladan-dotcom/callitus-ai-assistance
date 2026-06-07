@@ -359,6 +359,8 @@
                 });
             }
         }
+aiContentElement.innerHTML = `<span class="avatar-label">Assistant</span>${accumulatedAiResponse}`;
+chatContainer.scrollTop = chatContainer.scrollHeight;
 
         let suggestions = [];
 // --- SMART TEXT KANBAN PARSING LOGIC ---
@@ -511,6 +513,60 @@
 
     sendBtn.addEventListener('click', sendMessage);
     userInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') sendMessage(); });
+    // ==========================================
+// STANDALONE FILE TREE VISUALIZER HELPER
+// ==========================================
+function renderVisualFileTree(rawResponseText, targetBubbleElement) {
+    // Only activate if the text contains actual file tree branch icons
+    if (!rawResponseText.includes("├──") && !rawResponseText.includes("└──")) return;
+
+    try {
+        const lines = rawResponseText.split("\n");
+        
+        // 1. Isolate only the rows that look like folder paths or branch shapes
+        const treeLines = lines.filter(line => line.includes("├──") || line.includes("└──") || line.includes("│") || line.trim().endsWith("/"));
+        if (treeLines.length === 0) return;
+
+        // 2. Filter out those layout lines from the original text bubble view
+        const cleanBodyText = lines.filter(line => !line.includes("├──") && !line.includes("└──") && !line.includes("│") && !line.trim().endsWith("/")).join("\n").trim();
+        
+        // Clean the main chat bubble layout window so it stays tidy
+        targetBubbleElement.innerHTML = `<span class="avatar-label">Assistant</span>${cleanBodyText}`;
+
+        // 3. Construct the workspace tree box
+        const treeBox = document.createElement("div");
+        treeBox.className = "file-tree-container";
+        treeBox.innerHTML = `
+            <div class="file-tree-header">📁 Project Workspace Blueprints</div>
+            <div class="file-tree-body" id="dynamic-tree-target"></div>
+        `;
+        
+        // Append it cleanly underneath the message text inside your chat window box
+        const chatContainer = document.getElementById("chat-container");
+        if (chatContainer) {
+            chatContainer.appendChild(treeBox);
+            const targetRoot = treeBox.querySelector("#dynamic-tree-target");
+
+            // 4. Generate the nested elements inside the box row by row
+            treeLines.forEach(line => {
+                const cleanName = line.replace(/^[\s│├──└───\s\-]+/, "").trim();
+                const isFolder = line.trim().endsWith("/");
+                const displayName = isFolder ? cleanName.slice(0, -1) : cleanName;
+
+                if (displayName) {
+                    const node = document.createElement("div");
+                    node.className = `tree-node ${isFolder ? 'folder open' : 'file'}`;
+                    node.innerText = displayName;
+                    targetRoot.appendChild(node);
+                }
+            });
+            
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+    } catch (err) {
+        console.error("Visual tree rendering fallback skipped:", err);
+    }
+}
 </script>
 </body>
 </html>
