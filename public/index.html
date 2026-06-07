@@ -87,10 +87,10 @@
             .list-number { font-weight: bold; color: #4fc3f7; margin-right: 8px; flex-shrink: 0; }
             .list-text { flex: 1; }
             
-            /* Code Block Styling Extensions */
-            .code-container-block { background-color: #1a1a1a; border: 1px solid #333; border-radius: 6px; margin: 12px 0; overflow: hidden; font-family: 'Courier New', Courier, monospace; }
-            .code-header-bar { background-color: #2d2d2d; padding: 6px 12px; font-size: 11px; color: #aaa; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid #333; display: flex; justify-content: space-between; }
-            .code-body-payload { padding: 12px; overflow-x: auto; color: #f8f8f2; font-size: 13px; white-space: pre; margin: 0; }
+            /* Clean Code Block Styling */
+            .code-container-block { background-color: #1a1a1a; border: 1px solid #333; border-radius: 6px; margin: 12px 0; overflow: hidden; font-family: monospace; text-align: left; width: 100%; }
+            .code-header-bar { background-color: #2d2d2d; padding: 6px 12px; font-size: 11px; color: #aaa; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid #333; }
+            .code-body-payload { padding: 12px; overflow-x: auto; color: #f8f8f2; font-size: 13px; white-space: pre-wrap; margin: 0; font-family: monospace; }
         `;
         document.head.appendChild(styleTag);
     }
@@ -98,64 +98,56 @@
     // State memory array tracking conversation turns
     let chatHistory = [];
 
-    // Native layout renderer that handles code blocks, bold text, and lists completely offline
+    // Line-by-line layout streaming renderer (Bulletproof & Never Crashes)
     function cleanRender(rawText) {
         if (!rawText) return "";
         
-        let processed = rawText;
+        const lines = rawText.split('\n');
+        let htmlOutput = "";
+        let insideCodeBlock = false;
+        let currentCodeContent = "";
 
-        // 1. Process Code Blocks (code) before escaping characters inside them
-        const codeBlocks = [];
-        processed = processed.replace(/([\s\S]*?)/g, (match, codeContent) => {
-            const index = codeBlocks.length;
-            // Clean up empty lines and separate language identifier if present
-            let cleanCode = codeContent.trim();
-            let lang = "code";
-            const firstLineBreak = cleanCode.indexOf('\n');
-            if (firstLineBreak !== -1 && firstLineBreak < 15) {
-                const potentialLang = cleanCode.substring(0, firstLineBreak).trim();
-                if (/^[a-zA-Z0-9_-]+$/.test(potentialLang)) {
-                    lang = potentialLang;
-                    cleanCode = cleanCode.substring(firstLineBreak + 1).trim();
+        for (let i = 0; i < lines.length; i++) {
+            let line = lines[i];
+
+            // Detect Triple Backticks for Code Blocks
+            if (line.trim().startsWith('')) {
+                if (!insideCodeBlock) {
+                    insideCodeBlock = true;
+                    let lang = line.trim().replace(/```/g, '') || 'code';
+                    htmlOutput += `<div class="code-container-block"><div class="code-header-bar">${lang}</div><pre class="code-body-payload"><code>`;
+                } else {
+                    insideCodeBlock = false;
+                    htmlOutput += `</code></pre></div>`;
                 }
+                continue;
             }
-            
-            // Secure code contents from breaking HTML tags
-            const escapedCode = cleanCode.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-            
-            const htmlStructure = `
-                <div class="code-container-block">
-                    <div class="code-header-bar"><span>${lang}</span></div>
-                    <pre class="code-body-payload"><code>${escapedCode}</code></pre>
-                </div>
-            `;
-            codeBlocks.push(htmlStructure);
-            return `__CODE_BLOCK_PLACEHOLDER_${index}__`;
-        });
 
-        // 2. HTML escape the remaining standard text payloads safely
-        processed = processed.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-
-        // 3. Transform markdown *bold text* into strong elements
-        processed = processed.replace(/\\(.?)\\*/g, '<strong>$1</strong>');
-
-        // 4. Transform standard numbered lines into neat list block layouts
-        processed = processed.replace(/^(\d+)\.\s+(.*)$/gm, '<div class="list-item-row"><span class="list-number">$1.</span><span class="list-text">$2</span></div>');
-
-        // 5. Split empty double returns into standard semantic spacing gaps
-        processed = processed.split(/\n\n+/).map(para => {
-            if (para.trim().startsWith('<div class="list-item-row"') || para.trim().startsWith('_CODE_BLOCK_PLACEHOLDER')) {
-                return para;
+            // Handle content inside code blocks safely
+            if (insideCodeBlock) {
+                let escapedLine = line.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+                htmlOutput += escapedLine + '\n';
+                continue;
             }
-            return `<p class="paragraph-spacing">${para.trim().replace(/\n/g, '<br>')}</p>`;
-        }).join('');
 
-        // 6. Inject back the perfectly preserved code blocks safely
-        codeBlocks.forEach((blockHtml, index) => {
-            processed = processed.replace(`__CODE_BLOCK_PLACEHOLDER_${index}__`, blockHtml);
-        });
+            // Secure standard text payloads from breaking HTML tags
+            let safeLine = line.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 
-        return processed;
+            // Transform markdown *bold text* into strong elements
+            safeLine = safeLine.replace(/\\(.?)\\*/g, '<strong>$1</strong>');
+
+            // Transform standard numbered lines (e.g. 1. Text) into list blocks
+            const matchList = safeLine.match(/^(\d+)\.\s+(.*)$/);
+            if (matchList) {
+                htmlOutput += `<div class="list-item-row"><span class="list-number">${matchList[1]}.</span><span class="list-text">${matchList[2]}</span></div>`;
+            } else if (safeLine.trim() === "") {
+                htmlOutput += `<div style="height: 10px;"></div>`; // Clean spacing line break
+            } else {
+                htmlOutput += `<p class="paragraph-spacing">${safeLine}</p>`;
+            }
+        }
+
+        return htmlOutput;
     }
 
     async function sendMessage() {
@@ -193,7 +185,7 @@
                 const chunk = decoder.decode(value, { stream: true });
                 accumulatedAiResponse += chunk;
                 
-                // Pure internal parsing updating chunk by chunk seamlessly
+                // Pure line-by-line stable rendering update
                 aiContentElement.innerHTML = `<span class="avatar-label">Assistant</span>${cleanRender(accumulatedAiResponse)}`;
                 chatContainer.scrollTop = chatContainer.scrollHeight;
             }
@@ -204,7 +196,7 @@
 
         } catch (error) {
             console.error("Critical messaging pipeline crash:", error);
-            aiContentElement.innerHTML = '<span class="avatar-label">Assistant</span>Failed to generate response. Please try again.';
+            aiContentElement.innerHTML = `<span class="avatar-label">Assistant</span>Failed to generate response. Please try again.`;
         }
     }
 
