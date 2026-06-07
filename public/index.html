@@ -297,10 +297,13 @@ for (const line of lines) {
     accumulatedAiResponse += line; // Fallback for raw text chunks
   }
 }
-                
-                // Real-time ChatGPT rendering update
-                aiContentElement.innerHTML = `<span class="avatar-label">Assistant</span>${renderChatGPTLayout(accumulatedAiResponse)}`;
-                chatContainer.scrollTop = chatContainer.scrollHeight;
+      // Real-time custom engine rendering update with instant markdown parsing
+if (typeof marked !== 'undefined' && typeof marked.parse === 'function') {
+   aiContentElement.innerHTML = `<span class="avatar-label">Assistant</span>${marked.parse(accumulatedAiResponse)}`;
+} else {
+   aiContentElement.innerHTML = `<span class="avatar-label">Assistant</span>${accumulatedAiResponse.replace(/\n/g, '<br>')}`;
+}
+   chatContainer.scrollTop = chatContainer.scrollHeight;
             }
         
 // --- 1. INITIALIZE ACCUMULATED STREAM TEXT DATA ---
