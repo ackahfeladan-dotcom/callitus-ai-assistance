@@ -39,6 +39,59 @@
         button { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background-color: #212121; border: none; padding: 8px 14px; border-radius: 6px; color: #ececf1; cursor: pointer; font-weight: bold; font-size: 13px; }
         button:hover { background-color: #171717; color: white; }
         .new-chat-btn {position: relative; z-index: 10; cursor: pointer; /* Ensures the hand icon appears */}
+   .chips-container {
+    display: flex;
+    gap: 10px;
+    margin-top: 12px;
+    padding: 0 20px;
+    flex-wrap: wrap;
+    justify-content: flex-start; /* Aligns them nicely under the assistant bubble */
+    width: 100%;
+    .kanban-board {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+    margin: 15px 0;
+    width: 100%;
+    padding: 10px;
+}
+
+.kanban-column {
+    background: #1e1e1e;
+    border: 1px solid #333;
+    border-radius: 8px;
+    padding: 12px;
+    min-height: 150px;
+}
+
+.kanban-column h4 {
+    margin: 0 0 10px 0;
+    font-size: 14px;
+    color: #007acc;
+    text-transform: uppercase;
+}
+
+.kanban-task-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-height: 100px;
+}
+
+.kanban-card {
+    background: #2d2d2d;
+    border: 1px solid #444;
+    padding: 10px;
+    border-radius: 6px;
+    font-size: 13px;
+    color: #e0e0e0;
+    cursor: grab;
+}
+
+.kanban-card:active {
+    cursor: grabbing;
+}
+}
 </style>
 </head>
 <body>
@@ -159,6 +212,56 @@
                 aiContentElement.innerHTML = `<span class="avatar-label">Assistant</span>${renderChatGPTLayout(accumulatedAiResponse)}`;
                 chatContainer.scrollTop = chatContainer.scrollHeight;
             }
+
+            // --- KANBAN BOARD PARSING LOGIC ---
+        if (mainContent.includes("[KANBAN:")) {
+            const match = mainContent.match(/\[KANBAN:\s*([^\]]+)\]/);
+            if (match) {
+                const tasksRaw = match[1];
+                const tasks = tasksRaw.split("|").map(t => t.trim()).filter(Boolean);
+
+                // Clean the raw text marker token string from the screen layout view
+                mainContent = mainContent.replace(/\[KANBAN:\s*([^\]]+)\]/, "").trim();
+                aiContentElement.innerHTML = `<span class="avatar-label">Assistant</span>${mainContent}`;
+
+                // Construct Board DOM Node Element structure
+                const board = document.createElement("div");
+                board.className = "kanban-board";
+                board.innerHTML = `
+                    <div class="kanban-column"><h4 style="color:#ff4a4a">To Do</h4><div class="kanban-task-list" id="todo-list"></div></div>
+                    <div class="kanban-column"><h4 style="color:#ffb700">In Progress</h4><div class="kanban-task-list" id="progress-list"></div></div>
+                    <div class="kanban-column"><h4 style="color:#00cc66">Done</h4><div class="kanban-task-list" id="done-list"></div></div>
+                `;
+                chatContainer.appendChild(board);
+
+                // Inject Tasks into the "To Do" list column container [1]
+                const todoList = board.querySelector("#todo-list");
+                tasks.forEach((taskText, index) => {
+                    const card = document.createElement("div");
+                    card.className = "kanban-card";
+                    card.draggable = true;
+                    card.id = `task-${Date.now()}-${index}`;
+                    card.innerText = taskText;
+
+                    // Implement native drag events interaction handlers
+                    card.addEventListener("dragstart", (e) => e.dataTransfer.setData("text/plain", card.id));
+                    todoList.appendChild(card);
+                });
+
+                // Attach Dragover and Drop Zone event listeners across list columns
+                board.querySelectorAll(".kanban-task-list").forEach(list => {
+                    list.addEventListener("dragover", (e) => e.preventDefault());
+                    list.addEventListener("drop", (e) => {
+                        e.preventDefault();
+                        const cardId = e.dataTransfer.getData("text/plain");
+                        const draggedCard = document.getElementById(cardId);
+                        if (draggedCard) list.appendChild(draggedCard);
+                    });
+                });
+
+                chatContainer.scrollTop = chatContainer.scrollHeight;
+            }
+        }
 
   // --- CORRECTED VARIABLE NAME CASING ---
         let mainContent = accumulatedAiResponse;
