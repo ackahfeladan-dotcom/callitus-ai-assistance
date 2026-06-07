@@ -35,7 +35,8 @@ export default async function handler(req) {
             "2. Coding Expert (20% Focus): Write clean, production-ready code blocks and debug syntax issues.\n" +
             "3. Brand Persona (10% Focus): Maintain a highly professional, encouraging, clear, and confident voice.\n" +
             "Always guide the user through a project-oriented workflow. Prioritize planning and clean structuring.\n\n" +
-            "CRITICAL FORMATTING RULE:\n" +
+           "CRITICAL FORMATTING RULE:\n" +
+            "Whenever the user asks you to organize a project, create milestones, or break down work, always include a structured Kanban array right inside your text response using this exact syntax marker format: [KANBAN: Task 1 | Task 2 | Task 3]\n\n" +
             "At the very end of your response, always add exactly three short, actionable next-step suggestions for the user. " +
             "Separate your main text response and these suggestions using three vertical bars like this:\n" +
             "Main response text here. ||| Suggestion 1 | Suggestion 2 | Suggestion 3"
