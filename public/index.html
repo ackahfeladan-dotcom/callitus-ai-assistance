@@ -160,9 +160,54 @@
                 chatContainer.scrollTop = chatContainer.scrollHeight;
             }
 
-            // Save finalized message exchange pair into history memory arrays
-            chatHistory.push({ role: "user", text: text });
-            chatHistory.push({ role: "assistant", text: accumulatedAiResponse });
+                    
+  // 1. Separate text response content from chips formatting
+        let mainContent = accumulatedAIResponse;
+        let suggestions = [];
+
+        if (accumulatedAIResponse.includes("|||")) {
+            const parts = accumulatedAIResponse.split("|||");
+            mainContent = parts[0].trim();
+            const chipsSection = parts[1];
+            suggestions = chipsSection.split("|").map(s => s.trim()).filter(Boolean);
+
+            // Clean up the text displayed inside the chat bubble
+            aiContentElement.innerHTML = `<span class="avatar-label">Assistant</span>${mainContent}`;
+        }
+
+        // 2. Clear out any previous suggestions container before adding new ones
+        const oldChips = document.querySelector(".chips-container");
+        if (oldChips) oldChips.remove();
+
+        // 3. Render the new action items
+        if (suggestions.length > 0) {
+            const chipsContainer = document.createElement("div");
+            chipsContainer.className = "chips-container";
+
+            suggestions.forEach(text => {
+                const chip = document.createElement("button");
+                chip.className = "suggestion-chip";
+                chip.innerText = text;
+
+                chip.addEventListener("click", () => {
+                    const textInput = document.querySelector('#input-wrapper input') || document.querySelector('input');
+                    if (textInput) {
+                        textInput.value = text;
+                        const sendBtn = document.querySelector('#input-area-container button') || document.querySelector('.new-chat-btn');
+                        if (sendBtn) sendBtn.click();
+                    }
+                    chipsContainer.remove();
+                });
+
+                chipsContainer.appendChild(chip);
+            });
+
+            chatContainer.appendChild(chipsContainer);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+
+        // Update conversation state history array securely
+        chatHistory.push({ role: "assistant", text: mainContent });
 
         } catch (error) {
             console.error("Critical core messaging flow crash:", error);
