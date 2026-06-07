@@ -69,85 +69,57 @@
         </div>
     </div>
 
- <!-- Secure alternative markdown cloud package loader -->
-<script src="https://cloudflare.com" integrity="sha512-79Z7AsVb4shU79EnyWz9NsaIaswOonCkdVtoasw7PAnC8Vcl6AInWInToxXF8KqN8B93rYjNbywAnf3CisWvVw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+ <!-- Load Clean ChatGPT-Style Markdown Processing Bundle -->
+<script src="https://jsdelivr.net"></script>
 
 <script>
     const chatContainer = document.getElementById('chat-container');
     const userInput = document.getElementById('user-input');
     const sendBtn = document.getElementById('send-btn');
 
-    // Automatically inject clean layout and code-block styles directly into the page header
-    if (!document.getElementById('native-format-styles')) {
+    // Inject clean, modern ChatGPT typography styles directly into the document
+    if (!document.getElementById('chatgpt-ui-styles')) {
         const styleTag = document.createElement('style');
-        styleTag.id = 'native-format-styles';
+        styleTag.id = 'chatgpt-ui-styles';
         styleTag.innerHTML = `
-            .paragraph-spacing { margin-bottom: 14px; line-height: 1.6; }
-            .list-item-row { margin-bottom: 8px; display: flex; align-items: flex-start; line-height: 1.6; }
-            .list-number { font-weight: bold; color: #4fc3f7; margin-right: 8px; flex-shrink: 0; }
-            .list-text { flex: 1; }
+            /* ChatGPT Text Formatting Layouts */
+            .message-content p { margin-bottom: 16px; line-height: 1.6; color: #ececf1; }
+            .message-content p:last-child { margin-bottom: 0; }
+            .message-content strong { color: #ffffff; font-weight: 600; }
             
-            /* Clean Code Block Styling */
-            .code-container-block { background-color: #1a1a1a; border: 1px solid #333; border-radius: 6px; margin: 12px 0; overflow: hidden; font-family: monospace; text-align: left; width: 100%; }
-            .code-header-bar { background-color: #2d2d2d; padding: 6px 12px; font-size: 11px; color: #aaa; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid #333; }
-            .code-body-payload { padding: 12px; overflow-x: auto; color: #f8f8f2; font-size: 13px; white-space: pre-wrap; margin: 0; font-family: monospace; }
+            /* Clean Lists Layout */
+            .message-content ol, .message-content ul { margin: 8px 0 16px 24px; line-height: 1.6; color: #ececf1; }
+            .message-content li { margin-bottom: 6px; }
+            .message-content li strong { color: #ffffff; }
+
+            /* Premium Dark ChatGPT Code Blocks */
+            .message-content pre { background-color: #0d0d0d; border: 1px solid #2f2f2f; border-radius: 8px; margin: 16px 0; overflow: hidden; font-family: monospace; text-align: left; }
+            .message-content code { font-family: 'Courier New', Courier, monospace; background-color: rgba(255,255,255,0.1); padding: 2px 5px; border-radius: 4px; font-size: 14px; color: #f2f2f2; }
+            .message-content pre code { display: block; padding: 14px; overflow-x: auto; background-color: transparent; font-size: 13px; line-height: 1.5; white-space: pre; }
         `;
         document.head.appendChild(styleTag);
+    }
+
+    // Configure marked options to replicate standard markdown behaviors
+    if (typeof marked !== 'undefined' && marked.setOptions) {
+        marked.setOptions({ gfm: true, breaks: true });
     }
 
     // State memory array tracking conversation turns
     let chatHistory = [];
 
-    // Line-by-line layout streaming renderer (Bulletproof & Never Crashes)
-    function cleanRender(rawText) {
+    // Safe, robust translation engine to render markup layouts
+    function renderChatGPTLayout(rawText) {
         if (!rawText) return "";
-        
-        const lines = rawText.split('\n');
-        let htmlOutput = "";
-        let insideCodeBlock = false;
-        let currentCodeContent = "";
-
-        for (let i = 0; i < lines.length; i++) {
-            let line = lines[i];
-
-            // Detect Triple Backticks for Code Blocks
-            if (line.trim().startsWith('')) {
-                if (!insideCodeBlock) {
-                    insideCodeBlock = true;
-                    let lang = line.trim().replace(/```/g, '') || 'code';
-                    htmlOutput += `<div class="code-container-block"><div class="code-header-bar">${lang}</div><pre class="code-body-payload"><code>`;
-                } else {
-                    insideCodeBlock = false;
-                    htmlOutput += `</code></pre></div>`;
-                }
-                continue;
+        try {
+            if (typeof marked !== 'undefined' && typeof marked.parse === 'function') {
+                return marked.parse(rawText);
             }
-
-            // Handle content inside code blocks safely
-            if (insideCodeBlock) {
-                let escapedLine = line.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-                htmlOutput += escapedLine + '\n';
-                continue;
-            }
-
-            // Secure standard text payloads from breaking HTML tags
-            let safeLine = line.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-
-            // Transform markdown *bold text* into strong elements
-            safeLine = safeLine.replace(/\\(.?)\\*/g, '<strong>$1</strong>');
-
-            // Transform standard numbered lines (e.g. 1. Text) into list blocks
-            const matchList = safeLine.match(/^(\d+)\.\s+(.*)$/);
-            if (matchList) {
-                htmlOutput += `<div class="list-item-row"><span class="list-number">${matchList[1]}.</span><span class="list-text">${matchList[2]}</span></div>`;
-            } else if (safeLine.trim() === "") {
-                htmlOutput += `<div style="height: 10px;"></div>`; // Clean spacing line break
-            } else {
-                htmlOutput += `<p class="paragraph-spacing">${safeLine}</p>`;
-            }
+        } catch (e) {
+            console.error("Layout engine warning:", e);
         }
-
-        return htmlOutput;
+        // Secure text backup formatting fallback if parser breaks down
+        return rawText.replace(/\n/g, '<br>').replace(/\\(.?)\\*/g, '<strong>$1</strong>');
     }
 
     async function sendMessage() {
@@ -156,23 +128,20 @@
 
         userInput.value = '';
 
-        // Append user entry right aligned
-        appendRow(cleanRender(text), 'user-wrapper', 'user-content', 'You');
+        // Render user query on the right side
+        appendRow(renderChatGPTLayout(text), 'user-wrapper', 'user-content', 'You');
 
-        // Append temporary streaming row left aligned
+        // Append temporary streaming row on the left side
         const aiContentElement = appendRow('', 'ai-wrapper', 'ai-content', 'Assistant');
 
         try {
             const response = await fetch('/api/chat', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ 
-                    message: text,
-                    history: chatHistory 
-                })
+                body: JSON.stringify({ message: text, history: chatHistory })
             });
 
-            if (!response.ok) throw new Error("API route non-responsive");
+            if (!response.ok) throw new Error("Backend route non-responsive");
 
             const reader = response.body.getReader();
             const decoder = new TextDecoder();
@@ -185,18 +154,18 @@
                 const chunk = decoder.decode(value, { stream: true });
                 accumulatedAiResponse += chunk;
                 
-                // Pure line-by-line stable rendering update
-                aiContentElement.innerHTML = `<span class="avatar-label">Assistant</span>${cleanRender(accumulatedAiResponse)}`;
+                // Real-time ChatGPT rendering update
+                aiContentElement.innerHTML = `<span class="avatar-label">Assistant</span>${renderChatGPTLayout(accumulatedAiResponse)}`;
                 chatContainer.scrollTop = chatContainer.scrollHeight;
             }
 
-            // Commit completed chat exchange turn to history array
+            // Save finalized message exchange pair into history memory arrays
             chatHistory.push({ role: "user", text: text });
             chatHistory.push({ role: "assistant", text: accumulatedAiResponse });
 
         } catch (error) {
-            console.error("Critical messaging pipeline crash:", error);
-            aiContentElement.innerHTML = `<span class="avatar-label">Assistant</span>Failed to generate response. Please try again.`;
+            console.error("Critical core messaging flow crash:", error);
+            aiContentElement.innerHTML = '<span class="avatar-label">Assistant</span>Failed to stream responses. Please try again.';
         }
     }
 
