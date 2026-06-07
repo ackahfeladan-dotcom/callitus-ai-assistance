@@ -25,7 +25,7 @@ export default async function handler(req) {
 
     const encoder = new TextEncoder();
     const stream = new ReadableStream({
-      async start(controller) {
+      async start(controller) { 
         try {
           // 2. Start with our master Project Manager system instruction
           const messages = [
