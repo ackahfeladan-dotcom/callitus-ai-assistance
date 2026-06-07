@@ -92,6 +92,80 @@
     cursor: grabbing;
 }
 }
+/* Container framework mimicking a real IDE explorer */
+.file-tree-container {
+    background: #18181c;
+    border: 1px solid #2d2d34;
+    border-radius: 8px;
+    margin: 16px 0;
+    padding: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+
+.file-tree-header {
+    background: #202024;
+    padding: 8px 14px;
+    font-size: 11px;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: #9898a6;
+    border-bottom: 1px solid #2d2d34;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.file-tree-body {
+    padding: 12px;
+    overflow-x: auto;
+}
+
+/* Custom interactive nested tree item mechanics */
+.tree-node {
+    display: flex;
+    align-items: center;
+    padding: 4px 6px;
+    border-radius: 4px;
+    font-size: 13px;
+    color: #cccccc;
+    cursor: pointer;
+    -webkit-user-select: none; /* Put the prefix first */
+    user-select: none;         /* Put the standard property second */
+    transition: background 0.15s ease;
+    gap: 8px;
+}
+
+.tree-node:hover {
+    background: #2a2a30;
+    color: #ffffff;
+}
+
+.tree-node.folder {
+    color: #e2b34a;
+    font-weight: 500;
+}
+
+.tree-node.file {
+    color: #8da6ff;
+}
+
+.tree-node.file::before { content: "📄"; font-size: 11px; }
+.tree-node.folder::before { content: "📁"; font-size: 11px; transition: transform 0.2s; }
+.tree-node.folder.open::before { content: "📂"; }
+
+.tree-children {
+    padding-left: 20px;
+    border-left: 1px dashed #33333c;
+    margin-left: 12px;
+    display: block;
+}
+
+.tree-children.collapsed {
+    display: none;
+}
 </style>
 </head>
 <body>
@@ -212,6 +286,75 @@
                 aiContentElement.innerHTML = `<span class="avatar-label">Assistant</span>${renderChatGPTLayout(accumulatedAiResponse)}`;
                 chatContainer.scrollTop = chatContainer.scrollHeight;
             }
+            // --- ADVANCED BLUEPRINT CONSTRUCT INTERCEPTOR ---
+        if (accumulatedAiResponse.includes("[FILETREE:")) {
+            const startIdx = accumulatedAiResponse.indexOf("[FILETREE:");
+            const endIdx = accumulatedAiResponse.indexOf("]", startIdx);
+            
+            if (endIdx !== -1) {
+                const treeText = accumulatedAiResponse.substring(startIdx + 10, endIdx).trim();
+                accumulatedAiResponse = accumulatedAiResponse.substring(0, startIdx) + accumulatedAiResponse.substring(endIdx + 1);
+
+                const treeBox = document.createElement("div");
+                treeBox.className = "file-tree-container";
+                treeBox.innerHTML = `
+                    <div class="file-tree-header">📁 Project Workspace Blueprints</div>
+                    <div class="file-tree-body" id="tree-root-target"></div>
+                `;
+                chatContainer.appendChild(treeBox);
+                const targetRoot = treeBox.querySelector("#tree-root-target");
+
+                const lines = treeText.split("\n").filter(l => l.trim());
+                let currentContainer = targetRoot;
+                let containerStack = [targetRoot];
+                let depthStack = [-1];
+
+                lines.forEach(line => {
+                    const indentMatch = line.match(/^[\s│├──└──]+/);
+                    const depth = indentMatch ? indentMatch.length : 0;
+                    const cleanName = line.replace(/^[\s│├──└──]+/, "").trim();
+                    const isFolder = cleanName.endsWith("/");
+                    const displayName = isFolder ? cleanName.slice(0, -1) : cleanName;
+
+                    while (depthStack.length > 1 && depth <= depthStack[depthStack.length - 1]) {
+                        depthStack.pop();
+                        containerStack.pop();
+                    }
+                    currentContainer = containerStack[containerStack.length - 1];
+
+                    const node = document.createElement("div");
+                    node.className = `tree-node ${isFolder ? 'folder open' : 'file'}`;
+                    node.innerText = displayName;
+
+                    currentContainer.appendChild(node);
+
+                    if (isFolder) {
+                        const childWrapper = document.createElement("div");
+                        childWrapper.className = "tree-children";
+                        currentContainer.appendChild(childWrapper);
+
+                        node.addEventListener("click", (e) => {
+                            e.stopPropagation();
+                            node.classList.toggle("open");
+                            childWrapper.classList.toggle("collapsed");
+                        });
+
+                        containerStack.push(childWrapper);
+                        depthStack.push(depth);
+                    } else {
+                        node.addEventListener("click", (e) => {
+                            e.stopPropagation();
+                            const textInput = document.querySelector('.input-area-container input') || document.querySelector('input');
+                            if (textInput) {
+                                textInput.value = `Write the code boilerplate implementation for file: ${displayName}`;
+                                const sendBtn = document.querySelector('.input-area-container button') || document.querySelector('button');
+                                if (sendBtn) sendBtn.click();
+                            }
+                        });
+                    }
+                });
+            }
+        }
 
 // --- 1. INITIALIZE ACCUMULATED STREAM TEXT DATA ---
         let mainContent = accumulatedAiResponse;
