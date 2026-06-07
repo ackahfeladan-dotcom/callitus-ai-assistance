@@ -291,8 +291,8 @@
         let mainContent = accumulatedAiResponse;
             
             // --- ADVANCED BLUEPRINT CONSTRUCT INTERCEPTOR ---
-        if (accumulatedAiResponse.includes("[FILETREE:")) {
-            const startIdx = accumulatedAiResponse.indexOf("[FILETREE:");
+        if (accumulatedAiResponse.toUpperCase().includes("[FILETREE:")) {
+            const startIdx = accumulatedAiResponse.toUpperCase().indexOf("[FILETREE:");
             const endIdx = accumulatedAiResponse.indexOf("]", startIdx);
             
             if (endIdx !== -1) {
