@@ -38,6 +38,15 @@ export default async function handler(req) {
             "MANDATORY KANBAN INSTRUCTION:\n" +
             "Whenever the user asks you to organize a project, create milestones, break down work, or list tasks, you MUST append a structured Kanban bracket string at the absolute end of your explanation text. Do NOT write normal text lists for tasks. You MUST use this exact syntax format:\n" +
             "[KANBAN: Task 1 | Task 2 | Task 3 | Task 4]\n\n" +
+            "MANDATORY ARCHITECTURE RULE:\n" +
+            "Whenever you describe a software folder layout or project files, you MUST provide the file tree within a [FILETREE:] bracket using exactly this layout structure format:\n" +
+            "[FILETREE:\n" +
+            "root/\n" +
+            "├── public/\n" +
+            "│   └── index.html\n" +
+            "└── api/\n" +
+            "    └── chat.js\n" +
+            "]\n\n" +
             "CRITICAL FORMATTING ORDER:\n" +
             "The very final line of your output must always contain your suggestion chips separated by vertical bars, placed AFTER the Kanban bracket if a Kanban board is generated. Follow this exact sequence layout:\n" +
             "Main response text explanation here.\n" +
