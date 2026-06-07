@@ -291,8 +291,16 @@
         let mainContent = accumulatedAiResponse;
             
             // --- ADVANCED BLUEPRINT CONSTRUCT INTERCEPTOR ---
-        if (accumulatedAiResponse.toUpperCase().includes("[FILETREE:")) {
-            const startIdx = accumulatedAiResponse.toUpperCase().indexOf("[FILETREE:");
+ if (accumulatedAiResponse.includes("└──") || accumulatedAiResponse.includes("├──") || accumulatedAiResponse.toUpperCase().includes("FILETREE")) {
+
+    // 2. Locate the start index position cleanly based on what is present
+    let startIdx = accumulatedAiResponse.toUpperCase().indexOf("FILETREE");
+    if (startIdx !== -1) {
+        startIdx = startIdx - 1; // Align to tag brace layout position if present
+    } else {
+        // Fallback: If no tag exists, target the very first structural branch row layout line position
+        startIdx = accumulatedAiResponse.search(/[├──└──│]/);
+    }
             const endIdx = accumulatedAiResponse.indexOf("]", startIdx);
             
             if (endIdx !== -1) {
