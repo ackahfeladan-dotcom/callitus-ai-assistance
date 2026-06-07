@@ -297,16 +297,16 @@ for (const line of lines) {
     accumulatedAiResponse += line; // Fallback for raw text chunks
   }
 }
-// Real-time custom engine rendering update with instant typography layout parsing
+// Real-time premium rendering with built-in line layout tracking
       let formattedText = accumulatedAiResponse
-        .replace(/\n/g, '<br>') // Fixes paragraph line spacing splits
-        .replace(/\\(.?)\\*/g, '<strong>$1</strong>') // Formats text inside double asterisks to bold text
-        .replace(/### (.*?)(<br>|$)/g, '<h3>$1</h3>') // Formats headers cleanly
-        .replace(/\* (.*?)(<br>|$)/g, '<li>$1</li>'); // Formats clean bulleted spacing points
+        .replace(/###\s+(.*?)(?:\n|<br>|$)/g, '<h3 style="margin: 12px 0; font-size: 1.25rem; color: #ffffff;">$1</h3>')
+        .replace(/\\(.?)\\*/g, '<strong style="color: #ffffff; font-weight: 600;">$1</strong>')
+        .replace(/(?:\r\n|\r|\n)/g, '<br>');
 
-      aiContentElement.innerHTML = `<span class="avatar-label">Assistant</span><div class="markdown-body">${formattedText}</div>`;
+      aiContentElement.innerHTML = `<span class="avatar-label" style="display: block; font-weight: bold; margin-bottom: 6px; color: #888;">Assistant</span><div style="line-height: 1.6; color: #e3e3e3; white-space: pre-line;">${accumulatedAiResponse}</div>`;
       chatContainer.scrollTop = chatContainer.scrollHeight;
-            }
+    }
+            
         
 // --- 1. INITIALIZE ACCUMULATED STREAM TEXT DATA ---
         let mainContent = accumulatedAiResponse;
