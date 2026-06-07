@@ -263,26 +263,67 @@
             }
         }
 
-  // --- CORRECTED VARIABLE NAME CASING ---
+ // --- 1. INITIALIZE ACCUMULATED STREAM TEXT DATA ---
         let mainContent = accumulatedAiResponse;
         let suggestions = [];
 
-        if (accumulatedAiResponse.includes("|||")) {
-            const parts = accumulatedAiResponse.split("|||");
-            // Select index 0 for the main text block
-            mainContent = parts[0] ? parts[0].trim() : accumulatedAiResponse;
-            
-            // Select index 1 for the suggestions string
-            const chipsSection = parts[1] ? parts[1] : "";
+        // --- 2. RUN KANBAN PROTOCOL PARSING FIRST ---
+        if (mainContent.includes("[KANBAN:")) {
+            const match = mainContent.match(/\[KANBAN:\s*([^\]]+)\]/);
+            if (match) {
+                const tasksRaw = match[1];
+                const tasks = tasksRaw.split("|").map(t => t.trim()).filter(Boolean);
+
+                // Strip out the raw tag layout string so it remains clean
+                mainContent = mainContent.replace(/\[KANBAN:\s*([^\]]+)\]/, "").trim();
+
+                const board = document.createElement("div");
+                board.className = "kanban-board";
+                board.innerHTML = `
+                    <div class="kanban-column"><h4 style="color:#ff4a4a">To Do</h4><div class="kanban-task-list" id="todo-list"></div></div>
+                    <div class="kanban-column"><h4 style="color:#ffb700">In Progress</h4><div class="kanban-task-list" id="progress-list"></div></div>
+                    <div class="kanban-column"><h4 style="color:#00cc66">Done</h4><div class="kanban-task-list" id="done-list"></div></div>
+                `;
+                chatContainer.appendChild(board);
+
+                const todoList = board.querySelector("#todo-list");
+                tasks.forEach((taskText, index) => {
+                    const card = document.createElement("div");
+                    card.className = "kanban-card";
+                    card.draggable = true;
+                    card.id = `task-${Date.now()}-${index}`;
+                    card.innerText = taskText;
+
+                    card.addEventListener("dragstart", (e) => e.dataTransfer.setData("text/plain", card.id));
+                    todoList.appendChild(card);
+                });
+
+                board.querySelectorAll(".kanban-task-list").forEach(list => {
+                    list.addEventListener("dragover", (e) => e.preventDefault());
+                    list.addEventListener("drop", (e) => {
+                        e.preventDefault();
+                        const cardId = e.dataTransfer.getData("text/plain");
+                        const draggedCard = document.getElementById(cardId);
+                        if (draggedCard) list.appendChild(draggedCard);
+                    });
+                });
+            }
+        }
+
+        // --- 3. RUN ACTION CHIPS PROTOCOL PARSING SECOND ---
+        if (mainContent.includes("|||")) {
+            const parts = mainContent.split("|||");
+            mainContent = parts[0].trim();
+            const chipsSection = parts[1] || "";
             if (chipsSection) {
                 suggestions = chipsSection.split("|").map(s => s.trim()).filter(Boolean);
             }
-
-            // Update the screen text layout to clean out formatting strings
-            aiContentElement.innerHTML = `<span class="avatar-label">Assistant</span>${mainContent}`;
         }
 
-        // Render the suggestion chips layout if present
+        // Update the visible AI text window box dynamically with cleaned markdown
+        aiContentElement.innerHTML = `<span class="avatar-label">Assistant</span>${mainContent}`;
+
+        // Render Action Buttons underneath
         const oldChips = document.querySelector(".chips-container");
         if (oldChips) oldChips.remove();
 
@@ -296,10 +337,10 @@
                 chip.innerText = text;
 
                 chip.addEventListener("click", () => {
-                    const textInput = document.querySelector('#input-wrapper input') || document.querySelector('input');
+                    const textInput = document.querySelector('.input-area-container input') || document.querySelector('input');
                     if (textInput) {
                         textInput.value = text;
-                        const sendBtn = document.querySelector('#input-area-container button') || document.querySelector('button');
+                        const sendBtn = document.querySelector('.input-area-container button') || document.querySelector('button');
                         if (sendBtn) sendBtn.click();
                     }
                     chipsContainer.remove();
@@ -308,14 +349,14 @@
                 chipsContainer.appendChild(chip);
             });
 
-            // Append directly to the chatContainer variable used on line 160
             chatContainer.appendChild(chipsContainer);
-            chatContainer.scrollTop = chatContainer.scrollHeight;
         }
 
-        // Save cleanly formatted text to history array
-        chatHistory.push({ role: "assistant", text: mainContent });                  
-  
+        // Clean scrolling layout alignment
+        chatContainer.scrollTop = chatContainer.scrollHeight;
+
+        // --- 4. SECURE MEMORY SYNC LOGIC ---
+        chatHistory.push({ role: "assistant", text: mainContent });
 
         } catch (error) {
             console.error("Critical core messaging flow crash:", error);
