@@ -279,8 +279,24 @@
                 const { done, value } = await reader.read();
                 if (done) break;
 
-                const chunk = decoder.decode(value, { stream: true });
-                accumulatedAiResponse += chunk;
+             const chunk = decoder.decode(value, { stream: true });
+
+// Safely extract the words whether the backend streams raw text or premium JSON chunks
+const lines = chunk.split('\n');
+for (const line of lines) {
+  if (line.startsWith('data: ')) {
+    const dataStr = line.replace('data: ', '').trim();
+    if (dataStr === '[DONE]') break;
+    try {
+      const parsed = JSON.parse(dataStr);
+      if (parsed.text) accumulatedAiResponse += parsed.text;
+    } catch (e) {
+      accumulatedAiResponse += dataStr; // Fallback if it's not a JSON string
+    }
+  } else if (!line.startsWith('data:') && line.trim()) {
+    accumulatedAiResponse += line; // Fallback for raw text chunks
+  }
+}
                 
                 // Real-time ChatGPT rendering update
                 aiContentElement.innerHTML = `<span class="avatar-label">Assistant</span>${renderChatGPTLayout(accumulatedAiResponse)}`;
