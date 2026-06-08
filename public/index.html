@@ -401,7 +401,7 @@ while (true) {
     }
 
     // 2. Built-in Premium Document Typography Layout Processor
-    let paragraphs = finalCleanContent.split("\n");
+   let paragraphs = finalCleanContent.split(/\n|<br>/g);
     let parsedHTML = "";
 
     paragraphs.forEach(function(p) {
