@@ -393,39 +393,43 @@ while (true) {
                 });
             }
         }
-// 1. Cleans out raw bracket action text tags safely before parsing layout
-    let finalCleanContent = accumulatedAiResponse;
-    if (finalCleanContent.includes("[KANBAN:")) {
-      const kanbanIdx = finalCleanContent.indexOf("[KANBAN:");
-      finalCleanContent = finalCleanContent.substring(0, kanbanIdx).trim();
+// 2. High-Fidelity Plain Text Document Processor
+    let cleanText = finalCleanContent;
+    
+    // Normalize string-escaped newline characters securely
+    while (cleanText.includes("\\n")) {
+      cleanText = cleanText.replace("\\n", "\n");
     }
 
-    // 2. Built-in Premium Document Typography Layout Processor
-   let paragraphs = finalCleanContent.split(/\n|<br>/g);
+    let paragraphs = cleanText.split("\n");
     let parsedHTML = "";
 
     paragraphs.forEach(function(p) {
       let line = p.trim();
       if (!line) return;
 
-      // Formats ### Headers cleanly into distinct section blocks using safe template strings
-      if (line.startsWith("### ")) {
+      // Formats Double Hashtag Headers into clean titles
+      if (line.startsWith("## ")) {
+        let cleanHeader = line.replace("## ", "");
+        parsedHTML += '<h2 style="margin: 20px 0 8px 0; font-size: 1.4rem; color: #ffffff; font-weight: 700; display: block;">' + cleanHeader + '</h2>';
+      }
+      // Formats Triple Hashtag Headers into clean subtitles
+      else if (line.startsWith("### ")) {
         let cleanHeader = line.replace("### ", "");
-        parsedHTML += '<h3 style="margin: 18px 0 8px 0; font-size: 1.25rem; color: #ffffff; font-weight: 600; border-bottom: 1px solid #2f2f2f; padding-bottom: 4px;">' + cleanHeader + '</h3>';
+        parsedHTML += '<h3 style="margin: 18px 0 6px 0; font-size: 1.25rem; color: #ffffff; font-weight: 600; border-bottom: 1px solid #2f2f2f; padding-bottom: 4px; display: block;">' + cleanHeader + '</h3>';
       } 
-      // Formats Bullet items into indented listing rows using safe template strings
+      // Formats Bullet items into beautifully indented rows
       else if (line.startsWith("- ") || line.startsWith("* ")) {
         let cleanItem = line.substring(2);
-        parsedHTML += '<li style="margin: 6px 0 6px 20px; list-style-type: disc; color: #e3e3e3;">' + cleanItem + '</li>';
+        parsedHTML += '<li style="margin: 6px 0 6px 20px; color: #e3e3e3; list-style-type: disc; display: list-item;">' + cleanItem + '</li>';
       } 
-      // Standard message paragraph blocks using safe template strings
+      // Standard paragraph text block handling
       else {
-        // Formats *bold text* phrases cleanly without regular expression conflicts
         let processedLine = line;
         while (processedLine.includes("**")) {
           processedLine = processedLine.replace("*", '<strong style="color: #ffffff; font-weight: 600;">').replace("*", "</strong>");
         }
-        parsedHTML += '<p style="margin: 0 0 12px 0; line-height: 1.7; color: #e3e3e3; font-size: 0.95rem;">' + processedLine + '</p>';
+        parsedHTML += '<p style="margin: 0 0 12px 0; line-height: 1.7; color: #e3e3e3; font-size: 0.95rem; display: block;">' + processedLine + '</p>';
       }
     });
 
