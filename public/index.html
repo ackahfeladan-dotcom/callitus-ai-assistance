@@ -5,9 +5,47 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI Assistant by Callitus</title>
-  <script>
-  /* Local Fallback Markdown Engine */
-  !function(e,t){"object"==typeof exports&&"undefined"!=typeof module?t(exports):"function"==typeof define&&define.amd?define(["exports"],t):t((e="undefined"!=typeof globalThis?globalThis:e||self).marked={})}(this,(function(e){"use strict";function t(){return{async:!1,breaks:!1,extensions:null,gfm:!0,hooks:null,pedantic:!1,renderer:null,silent:!1,tokenizer:null,walkTokens:null}}e.defaults=t();const n=/&/g,r=/"/g,s=/'/g,i=/[<>&"']/g,l=e=>i.test(e)?e.replace(n,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(r,"&quot;").replace(s,"&#39;"):e;e.parse=(e,t)=>e;}));
+<script>
+  (function(global) {
+    global.marked = {
+      parse: function(markdownText) {
+        if (!markdownText) return "";
+        var lines = markdownText.split("\n");
+        
+        return lines.map(function(line) {
+          var trimmed = line.trim();
+          
+          // Formats bold, italics, and inline code safely using clean strings
+          function formatInline(text) {
+            var boldRegex = new RegExp("\\\\([^\\]+)\\\\*", "g");
+            var italicRegex = new RegExp("\\([^\\]+)\\*", "g");
+            var codeRegex = new RegExp("([^]+)`", "g");
+            
+            return text
+              .replace(boldRegex, "<strong>$1</strong>")
+              .replace(italicRegex, "<em>$1</em>")
+              .replace(codeRegex, "<code style='background: #111; padding: 2px 6px; border-radius: 4px; font-family: monospace; color: #f8f8f2;'>$1</code>");
+          }
+
+          if (trimmed.indexOf("###") === 0) {
+            return "<h3 style='margin: 1rem 0 0.5rem; font-size: 1.2rem; color: #fff; font-weight: 600;'>" + formatInline(trimmed.slice(3).trim()) + "</h3>";
+          }
+          if (trimmed.indexOf("##") === 0) {
+            return "<h2 style='margin: 1.2rem 0 0.6rem; font-size: 1.4rem; color: #fff; font-weight: 600;'>" + formatInline(trimmed.slice(2).trim()) + "</h2>";
+          }
+          if (trimmed.indexOf("- ") === 0 || trimmed.indexOf("* ") === 0) {
+            return "<li style='margin-left: 1.5rem; margin-bottom: 0.4rem; list-style-type: disc;'>" + formatInline(trimmed.slice(2).trim()) + "</li>";
+          }
+          if (/^\d+\.\s/.test(trimmed)) {
+            var cleanText = trimmed.replace(/^\d+\.\s/, "").trim();
+            return "<li style='margin-left: 1.5rem; margin-bottom: 0.4rem; list-style-type: decimal;'>" + formatInline(cleanText) + "</li>";
+          }
+          
+          return trimmed ? "<p style='margin-bottom: 0.8rem;'>" + formatInline(line) + "</p>" : "";
+        }).join("");
+      }
+    };
+  })(window);
 </script>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, sans-serif; }
