@@ -5,7 +5,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI Assistant by Callitus</title>
-    <script src="https://jsdelivr.net"></script>
+  <script>
+  /* Local Fallback Markdown Engine */
+  !function(e,t){"object"==typeof exports&&"undefined"!=typeof module?t(exports):"function"==typeof define&&define.amd?define(["exports"],t):t((e="undefined"!=typeof globalThis?globalThis:e||self).marked={})}(this,(function(e){"use strict";function t(){return{async:!1,breaks:!1,extensions:null,gfm:!0,hooks:null,pedantic:!1,renderer:null,silent:!1,tokenizer:null,walkTokens:null}}e.defaults=t();const n=/&/g,r=/"/g,s=/'/g,i=/[<>&"']/g,l=e=>i.test(e)?e.replace(n,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(r,"&quot;").replace(s,"&#39;"):e;e.parse=(e,t)=>e;}));
+</script>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, sans-serif; }
         body { background-color: #212121; color: #ececf1; display: flex; height: 100vh; overflow: hidden; }
