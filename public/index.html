@@ -74,6 +74,43 @@ if (/^\d+\.\s/.test(trimmed)) {
 </script>
     <style>
 
+/* Container holding the AI response card */
+.ai-wrapper, .chat-wrapper {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 16px 20px;
+  width: 100%;
+}
+
+/* The box containing the text */
+.message-content, .ai-content {
+  background-color: #1e1f20 !important; /* Premium matching surface color */
+  border: 1px solid #2d2f31 !important; /* Subtle, clean border */
+  border-radius: 12px !important;       /* Smooth rounded corners */
+  padding: 20px !important;
+  color: #e3e3e3 !important;
+  font-size: 15px !important;
+  line-height: 1.6 !important;
+  word-wrap: break-word;
+  white-space: pre-wrap;                /* Respects line breaks from the AI output */
+}
+
+/* Ensure clean spacing if the content has text spans */
+.message-content span {
+  display: inline-block;
+  margin-top: 4px;
+}
+
+/* Style the avatar label to look like a small clean badge */
+.avatar-label {
+  display: block;
+  font-weight: 600;
+  color: #fff;
+  margin-bottom: 8px;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
    /* --- Premium Dark Theme Theme Colors --- */
 body, .app-layout {
   background-color: #131314; /* Deep modern charcoal (Gemini/Claude style) */
