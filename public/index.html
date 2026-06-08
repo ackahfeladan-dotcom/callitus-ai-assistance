@@ -73,6 +73,15 @@ if (/^\d+\.\s/.test(trimmed)) {
   })(window);
 </script>
     <style>
+     /* Force the Workspace Blueprint container to wrap and stack directory paths vertically */
+.message.assistant pre, 
+pre[style*="background: #0d0d0d"] {
+  white-space: pre-wrap !important;       /* Overrides flat single-line layout constraints */
+  word-break: break-all !important;      /* Prevents text from extending off-screen */
+  display: block !important;
+  max-width: 100% !important;
+  line-height: 1.5 !important;
+}   
         /* Wide Center Workspace Layout like ChatGPT */
 .messages-container {
   display: flex;
