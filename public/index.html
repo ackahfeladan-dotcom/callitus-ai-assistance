@@ -58,11 +58,12 @@
             return "<li style='margin-left: 1.5rem; margin-bottom: 0.4rem; list-style-type: disc; color: #ececec;'>" + formatInline(trimmed.slice(2).trim()) + "</li>";
           }
           
-          // Check numbered lists
-          var firstChar = trimmed.charAt(0);
-          if (firstChar >= '0' && firstChar <= '9' && trimmed.indexOf(". ") === 1) {
-            return "<li style='margin-left: 1.5rem; margin-bottom: 0.4rem; list-style-type: decimal; color: #ececec;'> " + formatInline(trimmed.slice(2).trim()) + "</li>";
-          }
+         // Updated list checker: Handles multi-digit numbers like "10.", "1.", "2. "
+if (/^\d+\.\s/.test(trimmed)) {
+  var dotIndex = trimmed.indexOf(".");
+  var cleanText = trimmed.slice(dotIndex + 1).trim();
+  return "<li style='margin-left: 1.5rem; margin-bottom: 0.5rem; list-style-type: decimal; color: #ececec;'>" + formatInline(cleanText) + "</li>";
+}
           
           // Default paragraph
           return "<p style='margin-bottom: 0.8rem; color: #ececec;'>" + formatInline(line) + "</p>";
