@@ -73,6 +73,44 @@ if (/^\d+\.\s/.test(trimmed)) {
   })(window);
 </script>
     <style>
+        /* Container wrapper to relative-position the button */
+pre {
+  position: relative !important;
+  padding-top: 2.5rem !important; /* Leaves room for the top button bar */
+}
+
+/* Premium micro-copy button styling */
+.code-copy-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: #2a2a2a;
+  color: #b4b4b4;
+  border: 1px solid #444;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-family: system-ui, sans-serif;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+    -webkit-user-select: none; /* Safari */
+    -moz-user-select: none;    /* Firefox */
+    -ms-user-select: none;     /* IE10+/Edge */
+  user-select: none;
+}
+
+.code-copy-btn:hover {
+  background: #3e3e3e;
+  color: #fff;
+  border-color: #666;
+}
+
+.code-copy-btn.copied {
+  background: #2e7d32;
+  color: #fff;
+  border-color: #4caf50;
+}
      /* Force the Workspace Blueprint container to wrap and stack directory paths vertically */
 .message.assistant pre, 
 pre[style*="background: #0d0d0d"] {
@@ -500,11 +538,31 @@ function renderChatGPTLayout(rawText) {
     // 5. Append the cleanly formatted directory view box at the bottom if found
     if (collectedTreeStr && collectedTreeStr.trim()) {
             var verticalTreeContent = collectedTreeStr.split("|").join("\n").trim();
-        
-        parsedHTMLOutput += "<div style='margin-top: 1.5rem; font-weight: 600; color: #ffffff; font-size: 14px; margin-bottom: 6px;'>Workspace Blueprint:</div>" +
-                            "<pre style='background: #0d0d0d; padding: 14px; border-radius: 8px; font-family: monospace; font-size: 13px; color: #a9b7c6; border-left: 4px solid #a855f7; margin: 8px 0; overflow-x: auto; white-space: pre-wrap; word-break: break-all; line-height: 1.6;'>" + verticalTreeContent + "</pre>";
+           parsedHTMLOutput += "<div style='margin-top: 1.5rem; font-weight: 600; color: #ffffff; font-size: 14px; margin-bottom: 6px;'>Workspace Blueprint:</div>" +
+                            "<pre style='background: #0d0d0d; padding: 14px; padding-top: 2.5rem; border-radius: 8px; font-family: monospace; font-size: 13px; color: #a9b7c6; border-left: 4px solid #a855f7; margin: 8px 0; overflow-x: auto; white-space: pre-wrap; word-break: break-all; line-height: 1.6; position: relative;'>" + 
+                                "<button class='code-copy-btn' onclick='copyBlockContent(this)'>Copy</button>" + 
+                                verticalTreeContent + 
+                            "</pre>";
     }
     return parsedHTMLOutput;
+}
+// Global automated blueprint clipboard action system
+function copyBlockContent(buttonElement) {
+    var parentElement = buttonElement.parentElement;
+    // Cleanly extract text content while removing button label duplicates
+    var rawTextCopy = parentElement.innerText.replace("Copy", "").replace("Copied!", "").trim();
+    
+    navigator.clipboard.writeText(rawTextCopy).then(function() {
+        buttonElement.innerText = "Copied!";
+        buttonElement.classList.add("copied");
+        
+        setTimeout(function() {
+            buttonElement.innerText = "Copy";
+            buttonElement.classList.remove("copied");
+        }, 2000);
+    }).catch(function(err) {
+        console.error("Clipboard write error:", err);
+    });
 }
 
     async function sendMessage() {
