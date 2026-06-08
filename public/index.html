@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI Assistant by Callitus</title>
+    <script src="https://jsdelivr.net"></script>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, sans-serif; }
         body { background-color: #212121; color: #ececf1; display: flex; height: 100vh; overflow: hidden; }
@@ -15,6 +16,22 @@
         .new-chat-btn:hover { background-color: #2a2a2a; }
         .brand-box { margin-top: auto; padding: 15px 10px; border-top: 1px solid #2f2f2f; font-size: 13px; color: #b4b4b4; line-height: 1.4; }
         .brand-box strong { color: #4fc3f7; display: block; font-size: 14px; margin-top: 2px; }
+
+        /* Code block wrapper styling */
+.markdown-content pre {
+  background-color: #0d0d0d !important;
+  padding: 1rem !important;
+  border-radius: 8px !important;
+  overflow-x: auto !important;
+  margin: 1rem 0 !important;
+}
+
+/* Monospace font for the code text */
+.markdown-content code {
+  font-family: 'Courier New', Courier, monospace !important;
+  font-size: 0.9rem !important;
+  color: #f8f8f2 !important;
+}
 
         /* Main Chat Layout Area */
         #main-chat { flex: 1; display: flex; flex-direction: column; position: relative; }
@@ -297,12 +314,7 @@ while (true) {
         }
       }
 
-      // Format headers and bold text on every streaming tick
-      let formattedText = accumulatedAiResponse
-        .replace(/###\s+(.*?)(?:\n|<br>|$)/g, '<h3 style="margin: 12px 0; font-size: 1.25rem; color: #ffffff;">$1</h3>')
-        .replace(/\\(.?)\\*/g, '<strong style="color: #ffffff; font-weight: 600;">$1</strong>')
-        .replace(/(?:\r\n|\r|\n)/g, '<br>');
-
+     
       aiContentElement.innerHTML = `
         <span class="avatar-label" style="display: block; font-weight: bold; margin-bottom: 6px; color: #888;">Assistant</span>
         <div style="line-height: 1.6; color: #e3e3e3; white-space: pre-wrap; word-break: break-word;">${formattedText}</div>
