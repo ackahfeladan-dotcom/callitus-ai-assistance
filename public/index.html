@@ -432,6 +432,27 @@ function renderChatGPTLayout(rawText) {
             bodyTextPart = bodyTextPart.split(stickyKey).join(".\n\n" + step + ". ");
         }
     }
+    // INSIDE YOUR WHILE LOOP - Right after your dataStr / line variables are parsed:
+if (line.trim()) {
+    // 1. If it contains action chips or metadata, keep it safe but remove text crowding
+    let cleanChunk = line;
+    
+    // 2. Automatically split mashed sentences into individual paragraphs
+    cleanChunk = cleanChunk.split(". ").join(".\n\n");
+    cleanChunk = cleanChunk.split("? ").join("?\n\n");
+    cleanChunk = cleanChunk.split("! ").join("!\n\n");
+    
+    // 3. Fix compressed inline bullet/numbered list strings instantly
+    for (let index = 1; index <= 9; index++) {
+        let mashedPattern = "." + index + ".";
+        if (cleanChunk.includes(mashedPattern)) {
+            cleanChunk = cleanChunk.split(mashedPattern).join(".\n\n" + index + ". ");
+        }
+    }
+    
+    // Pass the clean chunk back to your remaining workspace engine
+    accumulatedAiResponse += cleanChunk;
+}
     
     // 4. Build and render the HTML layouts
     var structuralLines = bodyTextPart.split("\n");
