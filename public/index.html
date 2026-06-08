@@ -478,10 +478,11 @@ function renderChatGPTLayout(rawText) {
     
     // 5. Append the cleanly formatted directory view box at the bottom if found
     if (collectedTreeStr && collectedTreeStr.trim()) {
+            var verticalTreeContent = collectedTreeStr.split("|").join("\n").trim();
+        
         parsedHTMLOutput += "<div style='margin-top: 1.5rem; font-weight: 600; color: #ffffff; font-size: 14px; margin-bottom: 6px;'>Workspace Blueprint:</div>" +
-                            "<pre style='background: #0d0d0d; padding: 14px; border-radius: 8px; font-family: monospace; font-size: 13px; color: #a9b7c6; border-left: 4px solid #a855f7; margin: 8px 0; overflow-x: auto; white-space: pre; line-height: 1.5;'>" + collectedTreeStr.trim() + "</pre>";
+                            "<pre style='background: #0d0d0d; padding: 14px; border-radius: 8px; font-family: monospace; font-size: 13px; color: #a9b7c6; border-left: 4px solid #a855f7; margin: 8px 0; overflow-x: auto; white-space: pre-wrap; word-break: break-all; line-height: 1.6;'>" + verticalTreeContent + "</pre>";
     }
-    
     return parsedHTMLOutput;
 }
 
