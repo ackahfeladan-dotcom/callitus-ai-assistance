@@ -394,7 +394,7 @@ while (true) {
             }
         }
 // 2. High-Fidelity Plain Text Document Processor
-    let cleanText = finalCleanContent;
+    let cleanText = accumulatedAiResponse;
     
     // Normalize string-escaped newline characters securely
     while (cleanText.includes("\\n")) {
@@ -432,6 +432,7 @@ while (true) {
         parsedHTML += '<p style="margin: 0 0 12px 0; line-height: 1.7; color: #e3e3e3; font-size: 0.95rem; display: block;">' + processedLine + '</p>';
       }
     });
+
 
     // 3. Inject the beautifully structured document layout directly into the chat element container
     aiContentElement.innerHTML = `
