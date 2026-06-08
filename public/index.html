@@ -393,10 +393,9 @@ if (/^\d+\.\s/.test(trimmed)) {
 function renderChatGPTLayout(rawText) {
     if (!rawText) return "";
     
-    // Always enforce string type copies to prevent array splitting crashes
     var textString = String(rawText);
     
-    // 1. Isolate and strip out Kanban tokens safely using absolute index cut-offs
+    // 1. Isolate and strip out Kanban tokens safely
     if (textString.indexOf("[KANBAN:") !== -1) {
         textString = textString.split("[KANBAN:")[0];
     }
@@ -418,41 +417,20 @@ function renderChatGPTLayout(rawText) {
         }
     }
     
-    // 3. Inject explicit newline spacing markers to separate stuck sentences
+    // 3. Inject explicit newline spacing markers to separate stuck sentences into ChatGPT paragraphs
     bodyTextPart = bodyTextPart.split(". ").join(".\n\n");
     bodyTextPart = bodyTextPart.split("? ").join("?\n\n");
     bodyTextPart = bodyTextPart.split("! ").join("!\n\n");
     bodyTextPart = bodyTextPart.split("serve you.I'm").join("serve you.\n\nI'm");
     bodyTextPart = bodyTextPart.split("advice.So,").join("advice.\n\nSo,");
 
-    // Force hidden inline list numbers onto clean text paths
+    // Force hidden inline list numbers onto clean separate text paths
     for (var step = 1; step <= 9; step++) {
         var stickyKey = "." + step + ".";
         if (bodyTextPart.indexOf(stickyKey) !== -1) {
             bodyTextPart = bodyTextPart.split(stickyKey).join(".\n\n" + step + ". ");
         }
     }
-    // INSIDE YOUR WHILE LOOP - Right after your dataStr / line variables are parsed:
-if (line.trim()) {
-    // 1. If it contains action chips or metadata, keep it safe but remove text crowding
-    let cleanChunk = line;
-    
-    // 2. Automatically split mashed sentences into individual paragraphs
-    cleanChunk = cleanChunk.split(". ").join(".\n\n");
-    cleanChunk = cleanChunk.split("? ").join("?\n\n");
-    cleanChunk = cleanChunk.split("! ").join("!\n\n");
-    
-    // 3. Fix compressed inline bullet/numbered list strings instantly
-    for (let index = 1; index <= 9; index++) {
-        let mashedPattern = "." + index + ".";
-        if (cleanChunk.includes(mashedPattern)) {
-            cleanChunk = cleanChunk.split(mashedPattern).join(".\n\n" + index + ". ");
-        }
-    }
-    
-    // Pass the clean chunk back to your remaining workspace engine
-    accumulatedAiResponse += cleanChunk;
-}
     
     // 4. Build and render the HTML layouts
     var structuralLines = bodyTextPart.split("\n");
@@ -462,7 +440,9 @@ if (line.trim()) {
     function processBolds(rowInput) {
         var pieces = String(rowInput).split("**");
         for (var bIdx = 1; bIdx < pieces.length; bIdx += 2) {
-            pieces[bIdx] = "<strong style='color: #ffffff; font-weight: 600;'>" + pieces[bIdx] + "</strong>";
+            if (pieces[bIdx]) {
+                pieces[bIdx] = "<strong style='color: #ffffff; font-weight: 600;'>" + pieces[bIdx] + "</strong>";
+            }
         }
         return pieces.join("");
     }
@@ -482,6 +462,7 @@ if (line.trim()) {
                                   "<div style='flex: 1; color: #ececec;'>" + processBolds(coreRowText) + "</div>" +
                                "</div>";
         } else {
+            // Using cleanRowStr perfectly here to prevent ReferenceErrors!
             parsedHTMLOutput += "<p style='margin-bottom: 1.25rem; line-height: 1.65; font-size: 15.5px; color: #ececec; text-align: left;'>" + processBolds(cleanRowStr) + "</p>";
         }
     }
