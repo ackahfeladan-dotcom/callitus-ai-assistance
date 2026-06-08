@@ -370,10 +370,66 @@ pre[style*="background: #0d0d0d"] {
 .tree-children.collapsed {
     display: none;
 }
+/* --- Base Layout Rules --- */
+body {
+  margin: 0;
+  padding: 0;
+  overflow: hidden; /* Stops the main browser window from scrolling wildly */
+}
+
+.app-layout {
+  display: flex;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* Force the main chat container to take remaining space and handle scroll properly */
+#main-chat {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+}
+
+#chat-container {
+  flex: 1;
+  overflow-y: auto; /* Scrollbar stays confined inside the chat box only */
+  padding: 20px;
+}
+
+/* --- Code Block Rules (Stops the shifting & spreading) --- */
+pre {
+  max-width: 100% !important;
+  overflow-x: auto !important; /* Force internal horizontal scroll for code lines */
+  white-space: pre-wrap !important; /* Wrap long text inside the code bubble */
+  word-break: break-word !important;
+}
+
+/* --- Mobile Responsiveness (Screens smaller than 768px) --- */
+@media (max-width: 768px) {
+  .app-layout {
+    flex-direction: column; /* Stack layout components vertically on phones */
+  }
+
+  #sidebar {
+    width: 100% !important;
+    height: auto !important;
+    max-height: 200px; /* Limit sidebar size on phone screen so chat fits */
+    overflow-y: auto;
+  }
+  
+  #main-chat {
+    height: calc(100vh - 200px); /* Fill remaining space perfectly */
+  }
+}
+
 </style>
 </head>
 <body>
-
+     <!-- Add this new wrapper line right under <body> -->
+    <div class="app-layout">
     <!-- Left Sidebar Panel -->
     <div id="sidebar">
     <button class="new-chat-btn" id="new-chat-btn" onclick="clearChat()">+ New chat</button>
@@ -400,6 +456,7 @@ pre[style*="background: #0d0d0d"] {
             </div>
         </div>
     </div>
+
 
 <script>
     const chatContainer = document.getElementById('chat-container');
@@ -956,5 +1013,6 @@ function renderVisualFileTree(rawResponseText, targetBubbleElement) {
     }
 }
 </script>
+</div>
 </body>
 </html>
