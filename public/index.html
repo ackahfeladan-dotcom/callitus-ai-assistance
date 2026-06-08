@@ -316,19 +316,37 @@ if (/^\d+\.\s/.test(trimmed)) {
     // State memory array tracking conversation turns
     let chatHistory = [];
 
-    // Safe, robust translation engine to render markup layouts
-    function renderChatGPTLayout(rawText) {
-        if (!rawText) return "";
-        try {
-            if (typeof marked !== 'undefined' && typeof marked.parse === 'function') {
-                return marked.parse(rawText);
+  function renderChatGPTLayout(rawText) {
+    if (!rawText) return "";
+    
+    // 1. Clean out the KANBAN/Action tags so they don't clutter the main text
+    var cleanText = rawText.split("[KANBAN:")[0].split("|||")[0].trim();
+    
+    // 2. Split the long text block into separate sentences 
+    var sentences = cleanText.split(/(?<=[.!?])\s+(?=[A-Z])/);
+    var paragraphsHTML = "";
+    var currentParagraph = [];
+
+    // 3. Group every 2-3 sentences together to form beautiful, readable paragraphs
+    for (var i = 0; i < sentences.length; i++) {
+        currentParagraph.push(sentences[i]);
+        if (currentParagraph.length === 2 || i === sentences.length - 1) {
+            var paraText = currentParagraph.join(" ");
+            
+            // Format bold text manually without complex regex symbols
+            var boldParts = paraText.split("**");
+            for (var b = 1; b < boldParts.length; b += 2) {
+                boldParts[b] = "<strong>" + boldParts[b] + "</strong>";
             }
-        } catch (e) {
-            console.error("Layout engine warning:", e);
+            paraText = boldParts.join("");
+
+            paragraphsHTML += "<p style='margin-bottom: 1.25rem; line-height: 1.6; font-size: 15px; color: #ececec;'>" + paraText + "</p>";
+            currentParagraph = [];
         }
-        // Secure text backup formatting fallback if parser breaks down
-        return rawText.replace(/\n/g, '<br>').replace(/\\(.?)\\*/g, '<strong>$1</strong>');
     }
+
+    return paragraphsHTML;
+}
 
     async function sendMessage() {
         const text = userInput.value.trim();
