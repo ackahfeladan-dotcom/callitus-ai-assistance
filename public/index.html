@@ -604,7 +604,48 @@ pre {
     font-size: 24px;        /* Shrinks heading text size to fit cell phone borders */
   }
   }
+/* --- Balanced UI Layout --- */
+.onboarding-wrapper {
+  max-width: 600px !important;
+  margin: 8vh auto 0 auto !important; 
+  padding: 0 20px !important;
+  text-align: center !important;
+}
 
+.welcome-heading {
+  font-size: 26px !important; /* Elegant, downscaled size */
+  font-weight: 500 !important;
+  color: #ffffff !important;
+  letter-spacing: -0.01em !important;
+  line-height: 1.4 !important;
+  margin: 0 !important;
+}
+
+/* --- Fix Sidebar Layout & Force Visibility --- */
+#sidebar {
+  background-color: #1e1f20 !important;
+  border-right: 1px solid #2d2f31 !important;
+  padding: 16px !important;
+  display: flex !important;             
+  flex-direction: column !important;    
+  height: 100vh !important;
+  color: #ffffff !important;
+}
+
+/* Force your brand text container to the bottom and make it readable */
+.brand-box {
+  margin-top: auto !important;          
+  padding-top: 16px !important;
+  border-top: 1px solid #2d2f31 !important;
+  background-color: #1e1f20 !important; 
+  color: #ffffff !important;
+  display: block !important;
+}
+
+.brand-box div, .brand-box strong {
+  color: #ffffff !important;
+  font-size: 14px !important;
+}
 
 
 </style>
