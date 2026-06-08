@@ -577,6 +577,35 @@ pre {
     height: calc(100vh - 200px); /* Fill remaining space perfectly */
   }
 }
+/* --- Premium Minimalist Greeting Styles --- */
+.onboarding-wrapper {
+  max-width: 800px;
+  margin: 15vh auto 0 auto; /* Pushes text down nicely on desktop screen view */
+  padding: 0 24px;
+  text-align: center;       /* Centers text like high-profile apps */
+}
+
+.welcome-heading {
+  font-size: 36px;          /* Clean, striking font presentation size */
+  font-weight: 500;         /* Sleek, professional modern weight */
+  color: #ffffff;
+  letter-spacing: -0.02em;
+  line-height: 1.4;
+  margin: 0;
+}
+
+/* --- Mobile Device Screen Scale Overrides --- */
+@media (max-width: 768px) {
+  .onboarding-wrapper {
+    margin-top: 20vh;       /* Balanced padding top for mobile phones */
+  }
+  
+  .welcome-heading {
+    font-size: 24px;        /* Shrinks heading text size to fit cell phone borders */
+  }
+  }
+
+
 
 </style>
 </head>
@@ -595,17 +624,11 @@ pre {
     <!-- Main Window Area -->
     <div id="main-chat">
         <div id="chat-container">
-   <div class="chat-wrapper ai-wrapper">
-    <!-- 1. The label now sits cleanly on top -->
-    <div class="avatar-label">Assistant</div>
-    
-    <!-- 2. The message text sits inside its own clean box -->
-    <div class="message-content ai-content">
-        Hello! How can I assist you with your projects today?
-    </div>
-</div>
+  <div class="chat-wrapper onboarding-wrapper">
+        <h1 class="welcome-heading">How can I assist you with your projects today?</h1>
+ </div>
+ </div>
         </div>
-
         <div id="input-area-container">
             <div id="input-wrapper">
                 <input type="text" id="user-input" placeholder="Message your custom assistant..." autocomplete="off">
