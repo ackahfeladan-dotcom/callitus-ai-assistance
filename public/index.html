@@ -536,7 +536,7 @@ while (true) {
     
 
     // --- 1. INITIALIZE ACCUMULATED STREAM TEXT DATA ---
-    let mainContent = accumulatedAiResponse;
+    let mainContent = renderChatGPTLayout(accumulatedAiResponse);
             
             // --- ADVANCED BLUEPRINT CONSTRUCT INTERCEPTOR ---
  if (accumulatedAiResponse.includes("└──") || accumulatedAiResponse.includes("├──") || accumulatedAiResponse.toUpperCase().includes("FILETREE")) {
