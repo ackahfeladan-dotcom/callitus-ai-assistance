@@ -445,16 +445,37 @@ function renderChatGPTLayout(rawText) {
     var structuralLines = bodyTextPart.split("\n");
     var parsedHTMLOutput = "";
     
-    // Strong tag string builder
-    function processBolds(rowInput) {
-        var pieces = String(rowInput).split("**");
-        for (var bIdx = 1; bIdx < pieces.length; bIdx += 2) {
-            if (pieces[bIdx]) {
-                pieces[bIdx] = "<strong style='color: #ffffff; font-weight: 600;'>" + pieces[bIdx] + "</strong>";
+  // Strong tag string builder AND active web links
+        function processBolds(rowInput) {
+            var cleanRow = String(rowInput);
+            
+            // 1. Detect and convert web link tokens (http, https, www) into clickable links
+            var words = cleanRow.split(" ");
+            for (var w = 0; w < words.length; w++) {
+                var word = words[w];
+                if (word.indexOf("http://") === 0 || word.indexOf("https://") === 0 || word.indexOf("www.") === 0) {
+                    var cleanURL = word;
+                    if (word.indexOf("www.") === 0) {
+                        cleanURL = "https://" + word;
+                    }
+                    var trailingChar = cleanURL.charAt(cleanURL.length - 1);
+                    if (trailingChar === '.' || trailingChar === ',' || trailingChar === ')') {
+                        cleanURL = cleanURL.substring(0, cleanURL.length - 1);
+                    }
+                    words[w] = "<a href='" + cleanURL + "' target='_blank' rel='noopener noreferrer' style='color: #a855f7; text-decoration: underline; font-weight: 500; cursor: pointer;'>" + word + "</a>";
+                }
             }
+            cleanRow = words.join(" ");
+
+            // 2. Wrap bold markers normally
+            var pieces = cleanRow.split("**");
+            for (var bIdx = 1; bIdx < pieces.length; bIdx += 2) {
+                if (pieces[bIdx]) {
+                    pieces[bIdx] = "<strong style='color: #ffffff; font-weight: 600;'>" + pieces[bIdx] + "</strong>";
+                }
+            }
+            return pieces.join("");
         }
-        return pieces.join("");
-    }
 
     for (var i = 0; i < structuralLines.length; i++) {
         var cleanRowStr = structuralLines[i].trim();
