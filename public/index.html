@@ -595,11 +595,15 @@ pre {
     <!-- Main Window Area -->
     <div id="main-chat">
         <div id="chat-container">
-            <div class="chat-wrapper ai-wrapper">
-                <div class="message-content ai-content">
-                    <span class="avatar-label">Assistant</span>Hello! How can I assist you with your projects today?
-                </div>
-            </div>
+   <div class="chat-wrapper ai-wrapper">
+    <!-- 1. The label now sits cleanly on top -->
+    <div class="avatar-label">Assistant</div>
+    
+    <!-- 2. The message text sits inside its own clean box -->
+    <div class="message-content ai-content">
+        Hello! How can I assist you with your projects today?
+    </div>
+</div>
         </div>
 
         <div id="input-area-container">
