@@ -10,38 +10,62 @@
     global.marked = {
       parse: function(markdownText) {
         if (!markdownText) return "";
-        var lines = markdownText.split("\n");
         
+        // Simple string replacement function instead of complex RegExp
+        function formatInline(text) {
+          if (!text) return "";
+          
+          // Fix bold text (*word*)
+          var parts = text.split("**");
+          var formatted = "";
+          for (var i = 0; i < parts.length; i++) {
+            if (i % 2 === 1) {
+              formatted += "<strong>" + parts[i] + "</strong>";
+            } else {
+              formatted += parts[i];
+            }
+          }
+          
+          // Fix inline code blocks (code)
+          var codeParts = formatted.split("`");
+          var finalOutput = "";
+          for (var j = 0; j < codeParts.length; j++) {
+            if (j % 2 === 1) {
+              finalOutput += "<code style='background: #111; padding: 2px 6px; border-radius: 4px; font-family: monospace; color: #f8f8f2;'>" + codeParts[j] + "</code>";
+            } else {
+              finalOutput += codeParts[j];
+            }
+          }
+          
+          return finalOutput;
+        }
+
+        var lines = markdownText.split("\n");
         return lines.map(function(line) {
           var trimmed = line.trim();
-          
-          // Formats bold, italics, and inline code safely using clean strings
-          function formatInline(text) {
-            var boldRegex = new RegExp("\\\\([^\\]+)\\\\*", "g");
-            var italicRegex = new RegExp("\\([^\\]+)\\*", "g");
-            var codeRegex = new RegExp("([^]+)`", "g");
-            
-            return text
-              .replace(boldRegex, "<strong>$1</strong>")
-              .replace(italicRegex, "<em>$1</em>")
-              .replace(codeRegex, "<code style='background: #111; padding: 2px 6px; border-radius: 4px; font-family: monospace; color: #f8f8f2;'>$1</code>");
-          }
+          if (!trimmed) return "";
 
+          // Check headers
           if (trimmed.indexOf("###") === 0) {
             return "<h3 style='margin: 1rem 0 0.5rem; font-size: 1.2rem; color: #fff; font-weight: 600;'>" + formatInline(trimmed.slice(3).trim()) + "</h3>";
           }
           if (trimmed.indexOf("##") === 0) {
             return "<h2 style='margin: 1.2rem 0 0.6rem; font-size: 1.4rem; color: #fff; font-weight: 600;'>" + formatInline(trimmed.slice(2).trim()) + "</h2>";
           }
+          
+          // Check bullet lists
           if (trimmed.indexOf("- ") === 0 || trimmed.indexOf("* ") === 0) {
-            return "<li style='margin-left: 1.5rem; margin-bottom: 0.4rem; list-style-type: disc;'>" + formatInline(trimmed.slice(2).trim()) + "</li>";
-          }
-          if (/^\d+\.\s/.test(trimmed)) {
-            var cleanText = trimmed.replace(/^\d+\.\s/, "").trim();
-            return "<li style='margin-left: 1.5rem; margin-bottom: 0.4rem; list-style-type: decimal;'>" + formatInline(cleanText) + "</li>";
+            return "<li style='margin-left: 1.5rem; margin-bottom: 0.4rem; list-style-type: disc; color: #ececec;'>" + formatInline(trimmed.slice(2).trim()) + "</li>";
           }
           
-          return trimmed ? "<p style='margin-bottom: 0.8rem;'>" + formatInline(line) + "</p>" : "";
+          // Check numbered lists
+          var firstChar = trimmed.charAt(0);
+          if (firstChar >= '0' && firstChar <= '9' && trimmed.indexOf(". ") === 1) {
+            return "<li style='margin-left: 1.5rem; margin-bottom: 0.4rem; list-style-type: decimal; color: #ececec;'> " + formatInline(trimmed.slice(2).trim()) + "</li>";
+          }
+          
+          // Default paragraph
+          return "<p style='margin-bottom: 0.8rem; color: #ececec;'>" + formatInline(line) + "</p>";
         }).join("");
       }
     };
