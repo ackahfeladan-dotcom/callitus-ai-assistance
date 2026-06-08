@@ -319,33 +319,73 @@ if (/^\d+\.\s/.test(trimmed)) {
   function renderChatGPTLayout(rawText) {
     if (!rawText) return "";
     
-    // 1. Clean out the KANBAN/Action tags so they don't clutter the main text
-    var cleanText = rawText.split("[KANBAN:")[0].split("|||")[0].trim();
+    // 1. Isolate the main visible content from action metadata tags
+    var contentText = rawText;
+    if (contentText.indexOf("[KANBAN:") !== -1) {
+        contentText = contentText.split("[KANBAN:")[0];
+    }
+    if (contentText.indexOf("|||") !== -1) {
+        contentText = contentText.split("|||")[0];
+    }
     
-    // 2. Split the long text block into separate sentences 
-    var sentences = cleanText.split(/(?<=[.!?])\s+(?=[A-Z])/);
-    var paragraphsHTML = "";
-    var currentParagraph = [];
+    // 2. Break down the layout into raw lines to parse lists and file trees properly
+    var rawLines = contentText.split("\n");
+    var formattedHTML = "";
+    
+    // Helper function to process inline bold styling safely without Regex blocks
+    function applyInlineFormatting(text) {
+        var boldParts = text.split("**");
+        for (var i = 1; i < boldParts.length; i += 2) {
+            boldParts[i] = "<strong style='color: #fff; font-weight: 600;'>" + boldParts[i] + "</strong>";
+        }
+        return boldParts.join("");
+    }
 
-    // 3. Group every 2-3 sentences together to form beautiful, readable paragraphs
-    for (var i = 0; i < sentences.length; i++) {
-        currentParagraph.push(sentences[i]);
-        if (currentParagraph.length === 2 || i === sentences.length - 1) {
-            var paraText = currentParagraph.join(" ");
-            
-            // Format bold text manually without complex regex symbols
-            var boldParts = paraText.split("**");
-            for (var b = 1; b < boldParts.length; b += 2) {
-                boldParts[b] = "<strong>" + boldParts[b] + "</strong>";
+    for (var i = 0; i < rawLines.length; i++) {
+        var currentLine = rawLines[i].trim();
+        if (!currentLine) continue;
+
+        // 3. Render specialized layout blocks if a structural element is found
+        if (currentLine.indexOf("[FILETREE:") !== -1) {
+            var treeContent = currentLine.replace("[FILETREE:", "").replace("]", "");
+            formattedHTML += "<pre style='background: #0d0d0d; padding: 12px; border-radius: 6px; font-family: monospace; font-size: 13px; color: #a9b7c6; border-left: 3px solid #673ab7; margin: 10px 0; overflow-x: auto; white-space: pre;'>" + treeContent + "</pre>";
+            continue;
+        }
+
+        // 4. Handle embedded step counters inside continuous strings (e.g. "1.Determine", "2.Open")
+        // We inject physical breakpoints right before the numbers to stack them neatly into list rows
+        for (var num = 1; num <= 9; num++) {
+            var searchKey = num + ".";
+            if (currentLine.indexOf(searchKey) > 0) {
+                currentLine = currentLine.split(searchKey).join("\n" + searchKey);
             }
-            paraText = boldParts.join("");
+        }
 
-            paragraphsHTML += "<p style='margin-bottom: 1.25rem; line-height: 1.6; font-size: 15px; color: #ececec;'>" + paraText + "</p>";
-            currentParagraph = [];
+        // Re-process line structures if sub-breakpoints were injected
+        var subLines = currentLine.split("\n");
+        for (var j = 0; j < subLines.length; j++) {
+            var targetLine = subLines[j].trim();
+            if (!targetLine) continue;
+
+            // Check if line is a numbered step item
+            var firstChar = targetLine.charAt(0);
+            if (firstChar >= '1' && firstChar <= '9' && targetLine.indexOf(".") !== -1) {
+                var dotPos = targetLine.indexOf(".");
+                var stepNumber = targetLine.substring(0, dotPos + 1);
+                var stepText = targetLine.substring(dotPos + 1).trim();
+                
+                formattedHTML += "<div style='display: flex; margin-bottom: 0.75rem; font-size: 15px; line-height: 1.6;'>" +
+                                    "<span style='color: #673ab7; font-weight: bold; margin-right: 8px; min-width: 20px;'>" + stepNumber + "</span>" +
+                                    "<div style='flex: 1; color: #ececec;'>" + applyInlineFormatting(stepText) + "</div>" +
+                                 "</div>";
+            } else {
+                // Render standard conversational paragraph layers
+                formattedHTML += "<p style='margin-bottom: 1.25rem; line-height: 1.6; font-size: 15px; color: #ececec; text-align: justify;'>" + applyInlineFormatting(targetLine) + "</p>";
+            }
         }
     }
 
-    return paragraphsHTML;
+    return formattedHTML;
 }
 
     async function sendMessage() {
