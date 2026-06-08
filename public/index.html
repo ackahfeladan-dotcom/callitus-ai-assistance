@@ -519,7 +519,7 @@ while (true) {
         }
 
         // Update the visible AI text window box dynamically with cleaned text
-        aiContentElement.innerHTML = `<span class="avatar-label">Assistant</span>${mainContent}`;
+        aiContentElement.innerHTML = `<span class="avatar-label" style="display: block; font-weight: bold; margin-bottom: 6px; color: #fff;">Assistant</span>${marked.parse(mainContent)}`;
 
         // Render Action Buttons underneath
         const oldChips = document.querySelector(".chips-container");
@@ -554,8 +554,8 @@ while (true) {
         chatContainer.scrollTop = chatContainer.scrollHeight;
 
         // --- 4. SECURE MEMORY SYNC LOGIC ---
-        chatHistory.push({ role: "assistant", text: mainContent }); 
-
+        
+      chatHistory.push({ role: "assistant", text: mainContent });
 
 
         } catch (error) {
