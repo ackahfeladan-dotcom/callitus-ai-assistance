@@ -73,6 +73,80 @@ if (/^\d+\.\s/.test(trimmed)) {
   })(window);
 </script>
     <style>
+        /* Wide Center Workspace Layout like ChatGPT */
+.messages-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding: 2rem 1rem;
+  max-width: 52rem; 
+  margin: 0 auto;
+  width: 100%;
+}
+
+/* Row wrapper for each chat turn */
+.message-row {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+/* User Message Panel Layout */
+.message.user {
+  background-color: #2f2f2f;
+  border: 1px solid #3e3e3e;
+  padding: 1.25rem 1.5rem;
+  border-radius: 18px;
+  max-width: 80%;
+  align-self: flex-end;
+  color: #fff;
+}
+
+/* Assistant Message Panel Layout */
+.message.assistant {
+  background-color: transparent;
+  width: 100%;
+  align-self: flex-start;
+  padding: 0.5rem 0;
+  color: #ececec;
+}
+
+/* Native Paragraph Spacing Controls */
+.markdown-content p {
+  margin-bottom: 1.25rem;
+  line-height: 1.65;
+  font-size: 15.5px;
+  text-align: left;
+}
+
+/* Styled Numbered Step Rows */
+.step-container {
+  display: flex; 
+  margin: 0.75rem 0; 
+  font-size: 15px; 
+  line-height: 1.6;
+}
+
+.step-number {
+  color: #a855f7; 
+  font-weight: bold; 
+  margin-right: 12px; 
+  min-width: 24px;
+}
+
+/* File Tree Display Container overrides */
+.file-tree-container {
+  background: #0d0d0d !important; 
+  padding: 14px !important; 
+  border-radius: 8px !important; 
+  font-family: monospace !important; 
+  font-size: 13px !important; 
+  color: #a9b7c6 !important; 
+  border-left: 4px solid #a855f7 !important; 
+  margin: 1rem 0 !important; 
+  overflow-x: auto !important; 
+  white-space: pre !important; /* Forces layout tracking trees to keep structure */
+}
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, sans-serif; }
         body { background-color: #212121; color: #ececf1; display: flex; height: 100vh; overflow: hidden; }
         
@@ -445,15 +519,16 @@ while (true) {
         } else if (!line.startsWith('data:') && line.trim()) {
           accumulatedAiResponse += line;
         }
-      }
-
-     
-      aiContentElement.innerHTML = `
+          aiContentElement.innerHTML = `
         <span class="avatar-label" style="display: block; font-weight: bold; margin-bottom: 6px; color: #888;">Assistant</span>
         <div class="markdown-content" style="line-height: 1.6; color: #ececec; word-break: break-word;">${marked.parse(accumulatedAiResponse)}</div>
       `;
       chatContainer.scrollTop = chatContainer.scrollHeight;
     }
+      }
+
+     
+    
 
     // --- 1. INITIALIZE ACCUMULATED STREAM TEXT DATA ---
     let mainContent = accumulatedAiResponse;
