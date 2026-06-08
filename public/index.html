@@ -1257,6 +1257,122 @@ function renderVisualFileTree(rawResponseText, targetBubbleElement) {
         console.error("Visual tree rendering fallback skipped:", err);
     }
 }
+
+// ==========================================
+// 1. UNIVERSAL COPY-TO-CLIPBOARD FUNCTIONALITY
+// ==========================================
+document.addEventListener('click', async (e) => {
+    if (e.target.classList.contains('code-copy-btn') || e.target.closest('.code-copy-btn')) {
+        const button = e.target.classList.contains('code-copy-btn') ? e.target : e.target.closest('.code-copy-btn');
+        const preBlock = button.closest('pre');
+        const codeBlock = preBlock ? preBlock.querySelector('code') : null;
+        
+        if (codeBlock) {
+            try {
+                await navigator.clipboard.writeText(codeBlock.innerText);
+                const originalText = button.innerHTML;
+                button.innerHTML = '✓ Copied';
+                button.style.backgroundColor = '#10b981';
+                
+                setTimeout(() => {
+                    button.innerHTML = originalText;
+                    button.style.backgroundColor = '';
+                }, 2000);
+            } catch (err) {
+                console.error('Failed to copy text: ', err);
+            }
+        }
+    }
+});
+
+// ==========================================
+// 2. SIDEBAR CHAT HISTORY & NEW CHAT ENGINE
+// ==========================================
+let currentThreadId = null;
+let conversationThreads = JSON.parse(localStorage.getItem('ai_threads')) || [];
+
+document.addEventListener('DOMContentLoaded', () => {
+    renderHistoryList();
+});
+
+function createNewChat() {
+    currentThreadId = 'thread_' + Date.now();
+    const chatContainer = document.getElementById('chat-container');
+    if (chatContainer) {
+        chatContainer.innerHTML = `
+            <div class="chat-wrapper onboarding-wrapper">
+                <h1 class="welcome-heading">How can I assist you with your projects today?</h1>
+            </div>
+        `;
+    }
+}
+
+function saveMessageToHistory(role, text) {
+    if (!currentThreadId) currentThreadId = 'thread_' + Date.now();
+    let thread = conversationThreads.find(t => t.id === currentThreadId);
+    
+    if (!thread) {
+        thread = {
+            id: currentThreadId,
+            title: text.substring(0, 30) + '...',
+            messages: []
+        };
+        conversationThreads.unshift(thread);
+    }
+    
+    thread.messages.push({ role, text });
+    localStorage.setItem('ai_threads', JSON.stringify(conversationThreads));
+    renderHistoryList();
+}
+
+function renderHistoryList() {
+    const listContainer = document.getElementById('chat-history-list');
+    if (!listContainer) return;
+    listContainer.innerHTML = '';
+    
+    conversationThreads.forEach(thread => {
+        const item = document.createElement('div');
+        item.innerText = thread.title;
+        item.style.padding = '10px 12px';
+        item.style.margin = '4px 0';
+        item.style.borderRadius = '8px';
+        item.style.cursor = 'pointer';
+        item.style.fontSize = '14px';
+        item.style.color = '#c4c7c5';
+        item.style.whiteSpace = 'nowrap';
+        item.style.overflow = 'hidden';
+        item.style.textOverflow = 'ellipsis';
+        item.style.transition = 'background-color 0.2s';
+        
+        if (thread.id === currentThreadId) {
+            item.style.backgroundColor = '#2d2f31';
+            item.style.color = '#fff';
+        }
+        
+        item.addEventListener('mouseenter', () => item.style.backgroundColor = '#232425');
+        item.addEventListener('mouseleave', () => {
+            if (thread.id !== currentThreadId) item.style.backgroundColor = 'transparent';
+        });
+        
+        item.onclick = () => loadOldThread(thread.id);
+        listContainer.appendChild(item);
+    });
+}
+
+function loadOldThread(id) {
+    currentThreadId = id;
+    const thread = conversationThreads.find(t => t.id === id);
+    if (!thread) return;
+    
+    const chatContainer = document.getElementById('chat-container');
+    if (!chatContainer) return;
+    chatContainer.innerHTML = '';
+    
+    thread.messages.forEach(msg => {
+        // This is ready to connect directly with your existing message render logic!
+    });
+    renderHistoryList();
+}
 </script>
 </div>
 </body>
