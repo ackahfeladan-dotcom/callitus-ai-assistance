@@ -350,13 +350,43 @@ pre[style*="background: #0d0d0d"] {
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, sans-serif; }
         body { background-color: #212121; color: #ececf1; display: flex; height: 100vh; overflow: hidden; }
         
-        /* Left Sidebar Panel */
-        #sidebar { width: 260px; background-color: #171717; padding: 10px; display: flex; flex-direction: column; gap: 10px; border-right: 1px solid #2f2f2f; }
-        .new-chat-btn { background-color: transparent; border: 1px solid #4d4d4d; color: white; padding: 12px; border-radius: 6px; cursor: pointer; text-align: left; font-size: 14px; transition: background 0.2s; }
-        .new-chat-btn:hover { background-color: #2a2a2a; }
-        .brand-box { margin-top: auto; padding: 15px 10px; border-top: 1px solid #2f2f2f; font-size: 13px; color: #b4b4b4; line-height: 1.4; }
-        .brand-box strong { color: #4fc3f7; display: block; font-size: 14px; margin-top: 2px; }
+ #sidebar {
+  width: 260px !important;
+  min-width: 260px !important;
+  height: 100vh !important;
+  background-color: #1e1f20 !important; /* Premium dark background */
+  padding: 16px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: space-between !important;
+  box-sizing: border-box !important;
+  border-right: 1px solid #2d2f31 !important;
+}
 
+.new-chat-btn {
+  background-color: transparent !important;
+  border: 1px solid #444746 !important;
+  color: white !important;
+  border-radius: 20px !important;
+  padding: 10px 16px !important;
+  cursor: pointer !important;
+}
+
+.new-chat-btn:hover {
+  background-color: #2a2a2a !important;
+}
+
+.brand-box {
+  margin-top: auto !important;
+  padding: 16px 8px !important;
+  border-top: 1px solid #2d2f31 !important;
+  display: block !important;
+}
+
+.brand-box, .brand-box strong {
+  color: #ffffff !important; /* Makes your name clean white and highly visible */
+  font-size: 14px !important;
+}
         /* Code block wrapper styling */
 .markdown-content pre {
   background-color: #0d0d0d !important;
