@@ -393,83 +393,74 @@ if (/^\d+\.\s/.test(trimmed)) {
  function renderChatGPTLayout(rawText) {
     if (!rawText) return "";
     
-    // 1. Properly extract string text from metadata if it gets split into arrays
-    var contentText = rawText;
-    if (typeof contentText !== 'string') {
-        contentText = String(contentText);
+    // Ensure we work with a clean string copy
+    var processText = String(rawText);
+    
+    // 1. Force explicit line breaks before the specialized structural blocks
+    if (processText.indexOf("[FILETREE:") !== -1) {
+        processText = processText.split("[FILETREE:").join("\n\n[FILETREE:");
+    }
+    if (processText.indexOf("[KANBAN:") !== -1) {
+        processText = processText.split("[KANBAN:").join("\n\n[KANBAN:");
     }
     
-    // Safely extract the front text before any Kanban metadata markers
-    if (contentText.indexOf("[KANBAN:") !== -1) {
-        contentText = contentText.split("[KANBAN:")[0];
-    }
-    if (contentText.indexOf("|||") !== -1) {
-        contentText = contentText.split("|||")[0];
-    }
+    // 2. Break apart stuck questions or context changes into clean paragraph targets
+    processText = processText.split("? ").join("?\n\n");
+    processText = processText.split("]Let's").join("]\n\nLet's");
+    processText = processText.split(".If you're").join(".\n\nIf you're");
+
+    var lines = processText.split("\n");
+    var finalizedHTML = "";
     
-    // 2. Insert newline markers right before sticky inline numbers (e.g., "folder.2." becomes "folder.\n2.")
-    for (var num = 1; num <= 9; num++) {
-        var stickyPattern = "." + num + ".";
-        if (contentText.indexOf(stickyPattern) !== -1) {
-            contentText = contentText.split(stickyPattern).join(".\n" + num + ". ");
+    // Manual safe bold formatting wrapper
+    function parseBoldTokens(textLine) {
+        var parts = textLine.split("**");
+        for (var idx = 1; idx < parts.length; idx += 2) {
+            parts[idx] = "<strong style='color: #ffffff; font-weight: 600;'>" + parts[idx] + "</strong>";
         }
-    }
-    
-    // Extract hidden file tree segments to style them separately
-    var fileTreeText = "";
-    if (contentText.indexOf("[FILETREE:") !== -1) {
-        var treeParts = contentText.split("[FILETREE:");
-        contentText = treeParts[0]; // Main chat body text
-        if (treeParts[1] && treeParts[1].indexOf("]") !== -1) {
-            fileTreeText = treeParts[1].split("]")[0]; // Extracted directory structure
-        }
-    }
-    
-    // 3. Process structural lines
-    var rawLines = contentText.split("\n");
-    var formattedHTML = "";
-    
-    // Manual safe string bold formatting wrapper
-    function applyInlineFormatting(text) {
-        var boldParts = text.split("**");
-        for (var i = 1; i < boldParts.length; i += 2) {
-            if (boldParts[i]) {
-                boldParts[i] = "<strong style='color: #fff; font-weight: 600;'>" + boldParts[i] + "</strong>";
-            }
-        }
-        return boldParts.join("");
+        return parts.join("");
     }
 
-    for (var i = 0; i < rawLines.length; i++) {
-        var currentLine = rawLines[i].trim();
+    for (var i = 0; i < lines.length; i++) {
+        var currentLine = lines[i].trim();
         if (!currentLine) continue;
 
-        // Detect and style list rows nicely
-        var firstChar = currentLine.charAt(0);
-        if (firstChar >= '1' && firstChar <= '9' && currentLine.indexOf(".") !== -1) {
-            var dotPos = currentLine.indexOf(".");
-            var stepNumber = currentLine.substring(0, dotPos + 1);
-            var stepText = currentLine.substring(dotPos + 1).trim();
+        // 3. Catch and isolate the FILETREE structure beautifully
+        if (currentLine.indexOf("[FILETREE:") === 0) {
+            var treeContent = currentLine.replace("[FILETREE:", "");
+            if (treeContent.indexOf("]") !== -1) {
+                treeContent = treeContent.substring(0, treeContent.indexOf("]"));
+            }
+            // Swap the horizontal bar character indicators to real visual line returns
+            treeContent = treeContent.split("|").join("\n");
             
-            formattedHTML += "<div style='display: flex; margin-top: 0.6rem; margin-bottom: 0.6rem; font-size: 15px; line-height: 1.6;'>" +
-                                "<span style='color: #a855f7; font-weight: bold; margin-right: 10px; min-width: 24px;'>" + stepNumber + "</span>" +
-                                "<div style='flex: 1; color: #ececec;'>" + applyInlineFormatting(stepText) + "</div>" +
+            finalizedHTML += "<div style='margin-top: 0.75rem; font-weight: 600; color: #ffffff; font-size: 14px; margin-bottom: 4px;'>Workspace Structure:</div>" +
+                             "<pre style='background: #0d0d0d; padding: 14px; border-radius: 8px; font-family: monospace; font-size: 13px; color: #a9b7c6; border-left: 4px solid #a855f7; margin: 8px 0; overflow-x: auto; white-space: pre; line-height: 1.5;'>" + treeContent.trim() + "</pre>";
+            continue;
+        }
+
+        // 4. Strip out any trailing Kanban tokens from printing as flat words
+        if (currentLine.indexOf("[KANBAN:") === 0) continue;
+
+        // 5. Catch and lay out any sequential step number structures
+        var firstCharacter = currentLine.charAt(0);
+        if (firstCharacter >= '1' && firstCharacter <= '9' && currentLine.indexOf(".") !== -1) {
+            var dotLocation = currentLine.indexOf(".");
+            var stepNumLabel = currentLine.substring(0, dotLocation + 1);
+            var stepCoreContent = currentLine.substring(dotLocation + 1).trim();
+            
+            finalizedHTML += "<div style='display: flex; margin-top: 0.6rem; margin-bottom: 0.6rem; font-size: 15px; line-height: 1.6;'>" +
+                                "<span style='color: #a855f7; font-weight: bold; margin-right: 12px; min-width: 24px;'> " + stepNumLabel + "</span>" +
+                                "<div style='flex: 1; color: #ececec;'>" + parseBoldTokens(stepCoreContent) + "</div>" +
                              "</div>";
         } else {
-            // Standard conversational paragraph layers
-            formattedHTML += "<p style='margin-bottom: 1rem; line-height: 1.6; font-size: 15px; color: #ececec;'>" + applyInlineFormatting(currentLine) + "</p>";
+            // Render perfectly separated individual paragraph text blocks
+            finalizedHTML += "<p style='margin-bottom: 1.25rem; line-height: 1.6; font-size: 15px; color: #ececec; text-align: left;'> " + parseBoldTokens(currentLine) + "</p>";
         }
     }
-
-    // 4. Append the extracted file tree view at the bottom if found
-    if (fileTreeText) {
-        formattedHTML += "<div style='margin-top: 1rem; font-weight: 600; color: #fff; font-size: 14px; margin-bottom: 6px;'>Project File Tree:</div>" +
-                         "<pre style='background: #0d0d0d; padding: 14px; border-radius: 8px; font-family: monospace; font-size: 13px; color: #a9b7c6; border-left: 4px solid #a855f7; margin: 8px 0; overflow-x: auto; white-space: pre-wrap; word-break: break-all; line-height: 1.4;'>" + fileTreeText.trim() + "</pre>";
-    }
-
-    return formattedHTML;
+    
+    return finalizedHTML;
 }
-  
 
     async function sendMessage() {
         const text = userInput.value.trim();
