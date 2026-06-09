@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "type": "module",
   "dependencies": {
+    "@ai-sdk/openai": "^3.0.68",
     "@langchain/core": "^0.3.0",
-    "@langchain/groq": "^0.1.2"
+    "@langchain/groq": "^0.1.2",
+    "ai": "^6.0.198"
   }
 }
