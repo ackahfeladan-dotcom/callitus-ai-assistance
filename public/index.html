@@ -737,6 +737,47 @@ pre {
   flex: 1 !important;
   height: 100% !important;
 }
+
+/* --- Eliminate the Extra Bottom Scrolling Layer --- */
+  html, body, .app-layout {
+    width: 100vw !important;
+    height: 100vh !important;
+    max-height: 100vh !important;
+    overflow: hidden !important; /* Locks the outer shell completely still */
+    margin: 0 !important;
+    padding: 0 !important;
+    position: fixed !important; /* Prevents mobile safari/chrome from bouncing */
+  }
+
+  #main-chat {
+    width: 100vw !important;
+    height: 100vh !important;
+    max-height: 100vh !important;
+    display: flex !important;
+    flex-direction: column !important;
+    overflow: hidden !important; /* Stops the main chat pane from leaking content downwards */
+    position: relative !important;
+  }
+
+  /* --- Only the Messages Area Allowed to Scroll --- */
+  #chat-container {
+  overflow-y: auto !important; /* The ONLY place scrolling can physically happen */
+  scroll-behavior: smooth !important; /* Standard modern rule for smooth scrolling */
+  padding: 80px 14px 120px 14px !important;
+  }
+
+  /* --- Secure Input Area Flatly at the Absolute Base --- */
+  #input-area-container {
+    position: absolute !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    width: 100vw !important;
+    height: 80px !important; /* Locked flat height */
+    background-color: #131314 !important; /* Solid block shields scrolled text underneath */
+    margin: 0 !important;
+    z-index: 9999 !important;
+    box-sizing: border-box !important;
+  }
 /* --- STRICT MOBILE OVERRIDES ONLY (DOES NOT TOUCH DESKTOP) --- */
 @media (max-width: 768px) {
   /* 1. Hide the sidebar completely off-screen into an isolated layer */
