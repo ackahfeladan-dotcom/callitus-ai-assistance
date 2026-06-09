@@ -749,23 +749,40 @@ pre {
     position: fixed !important; /* Prevents mobile safari/chrome from bouncing */
   }
 
-  /* Fix the main container to divide screen space dynamically */
+  /* 1. Lock the screen container */
   #main-chat {
     width: 100vw !important;
     height: 100vh !important;
     max-height: 100vh !important;
-    display: flex !important;
-    flex-direction: column !important; /* Arranges messages on top, box on bottom */
     overflow: hidden !important;
     position: relative !important;
   }
 
-  /* Messages container takes up all available top space */
+  /* 2. Scroll container with safety space at the bottom */
   #chat-container {
-    flex: 1 !important;             /* Grows to fill everything except the input height */
-    overflow-y: auto !important;     /* Only this container can scroll */
+    height: 100vh !important;
+    max-height: 100vh !important;
+    overflow-y: auto !important;
     scroll-behavior: smooth !important;
-    padding: 80px 14px 20px 14px !important; /* Normal bottom padding since it won't overlap */
+    /* 110px padding protects your text from going behind the fixed input bar */
+    padding: 80px 14px 110px 14px !important; 
+    box-sizing: border-box !important;
+  }
+
+  /* 3. Force the Input Bar to stick to the glass of the screen */
+  #input-area-container {
+    position: fixed !important;   /* Floats on a fixed screen layer */
+    bottom: 0 !important;         /* Hard-pinned to the very bottom wire */
+    left: 0 !important;
+    width: 100vw !important;
+    height: 80px !important;      /* Locked flat height */
+    background-color: #131314 !important; /* Solid background covers any text behind it */
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 0 16px !important;
+    margin: 0 !important;
+    z-index: 99999 !important;     /* Highest layer depth priority */
     box-sizing: border-box !important;
   }
 /* --- STRICT MOBILE OVERRIDES ONLY (DOES NOT TOUCH DESKTOP) --- */
