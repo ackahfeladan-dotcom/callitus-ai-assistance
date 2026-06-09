@@ -671,42 +671,71 @@ pre {
   font-size: 14px !important;
 }
 
-/* --- Anchored Viewport Structure --- */
+/* --- Lock the Outer App Shell --- */
+.app-layout {
+  display: flex !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  overflow: hidden !important;
+}
+
+/* --- Main Workspace Layout --- */
 #main-chat {
+  flex: 1 !important;
   display: flex !important;
   flex-direction: column !important;
-  height: 100vh !important;       /* Locks the main screen height */
-  overflow: hidden !important;     /* Stops the whole screen from scrolling */
+  height: 100vh !important;
+  overflow: hidden !important;
+  background-color: #131314 !important;
   position: relative !important;
 }
 
-/* --- Isolated Scrolling Container --- */
+/* --- Independent Message Container Scroll --- */
 #chat-container {
-  flex: 1 !important;              /* Takes up all available space above the input */
-  overflow-y: auto !important;     /* Forces scrolling ONLY inside this section */
-  padding-bottom: 20px !important; /* Adds breathing room at the bottom */
-}
-
-/* --- Fixed Bottom Input Panel --- */
-#input-area-container {
-  position: sticky !important;
-  bottom: 0 !important;            /* Anchors firmly to the phone viewport base */
+  flex: 1 !important;
+  overflow-y: auto !important;
+  padding: 20px 20px 100px 20px !important; /* Huge bottom padding so text clears the box */
   width: 100% !important;
-  background-color: #131314 !important; /* Matches background to mask scrolling text */
-  padding: 12px 16px !important;
   box-sizing: border-box !important;
-  z-index: 100 !important;         /* Keeps input layered safely on top of text */
 }
 
-/* --- Mobile Device Screen Scale Overrides --- */
-@media (max-width: 768px) {
-  #main-chat {
-    height: 100vh !important;
-  }
-  
-  #input-area-container {
-    padding: 8px 12px !important;   /* Slims down margins on narrow phone screens */
-  }
+/* --- Clean, Low-Profile Fixed Input Panel --- */
+#input-area-container {
+  position: absolute !important;
+  bottom: 0 !important;
+  left: 0 !important;
+  width: 100% !important;
+  height: 90px !important; /* Force a tiny, flat fixed height */
+  background-color: #131314 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 0 16px !important;
+  box-sizing: border-box !important;
+  z-index: 1000 !important;
+}
+
+#input-wrapper {
+  background-color: #1e1f20 !important;
+  border: 1px solid #444746 !important;
+  border-radius: 28px !important;
+  padding: 8px 16px !important;
+  display: flex !important;
+  align-items: center !important;
+  width: 100% !important;
+  max-width: 720px !important; /* Keeps it clean and centered */
+  height: 52px !important; /* Match standard pill size */
+  box-sizing: border-box !important;
+}
+
+#user-input {
+  background: transparent !important;
+  border: none !important;
+  color: #fff !important;
+  outline: none !important;
+  font-size: 15px !important;
+  flex: 1 !important;
+  height: 100% !important;
 }
 
 </style>
