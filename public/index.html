@@ -777,26 +777,35 @@ pre {
   }
 }
 
-/* Clean classes to replace the inline styling warnings */
+/* Completely pull the navigation container out of the layout workflow */
   .mobile-nav-bar {
-    display: flex !important;
-    align-items: center !important;
-    width: 100% !important;
-    padding: 12px 16px !important;
+    position: absolute !important;
+    top: 16px !important;
+    left: 16px !important;
+    width: auto !important; /* Shrinks the box width to wrap tightly around the text */
     background-color: #1e1f20 !important;
-    border-bottom: 1px solid #2d2f31 !important;
-    box-sizing: border-box !important;
+    border: 1px solid #2d2f31 !important;
+    border-radius: 20px !important; /* Neat premium rounded pill badge style */
+    padding: 6px 14px !important;
+    z-index: 5000 !important; /* Floats safely on top of incoming text streams */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
   }
 
   .mobile-menu-trigger {
     background: transparent !important;
     border: none !important;
     color: #ffffff !important;
-    font-size: 18px !important;
+    font-size: 14px !important; /* Slightly smaller, elegant icon presentation */
     cursor: pointer !important;
     font-weight: 500 !important;
   }
 
+  /* Give the message list padding at the top so text never crawls under our floating badge */
+  #chat-container {
+    padding-top: 70px !important;
+    padding-left: 16px !important;
+    padding-right: 16px !important;
+  }
 </style>
 </head>
 <body>
