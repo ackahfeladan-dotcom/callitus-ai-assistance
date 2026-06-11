@@ -11,18 +11,22 @@
     <link rel="stylesheet" href="https://cloudflare.com">
 
     <!-- Stable standard Markdown Compiler -->
-    <script src="https://cloudflare.com"></script>
+    <script src="https://cloudflare.com" defer></script>
 
     <!-- Syntax Highlighter engine -->
-    <script src="https://cloudflare.com"></script>
+    <script src="https://cloudflare.com" defer></script>
+
+  script>
 
     <script>
-        const renderer = new marked.Renderer();
-        marked.use({
-            renderer,
-            breaks: true,
-            gfm: true,
-            async: false
+        document.addEventListener("DOMContentLoaded", function() {
+            const renderer = new marked.Renderer();
+            marked.use({
+                renderer,
+                breaks: true,
+                gfm: true,
+                async: false
+            });
         });
     </script>
 </script>
