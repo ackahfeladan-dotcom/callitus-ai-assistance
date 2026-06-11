@@ -11,22 +11,23 @@
     <link rel="stylesheet" href="https://cloudflare.com">
 
     <!-- Stable standard Markdown Compiler -->
-    <script src="https://cloudflare.com" defer></script>
+    <script src="https://cloudflare.com"></script>
 
     <!-- Syntax Highlighter engine -->
-    <script src="https://cloudflare.com" defer></script>
-
-  script>
+    <script src="https://cloudflare.com"></script>
 
     <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            const renderer = new marked.Renderer();
-            marked.use({
-                renderer,
-                breaks: true,
-                gfm: true,
-                async: false
-            });
+        window.addEventListener('DOMContentLoaded', () => {
+            if (typeof marked !== 'undefined') {
+                const renderer = new marked.Renderer();
+                marked.use({
+                    renderer,
+                    breaks: true,
+                    gfm: true
+                });
+            } else {
+                console.error("Marked library failed to load from CDN.");
+            }
         });
     </script>
 </script>
