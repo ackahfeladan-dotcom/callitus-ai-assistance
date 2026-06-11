@@ -4,16 +4,19 @@
     
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <!-- Styles the code blocks with a dark theme -->
-    <link rel="stylesheet" href="https://cloudflare.com">
-    <!-- Converts Markdown text into clean HTML -->
-    <script src="https://jsdelivr.net"></script>
-    <!-- Detects code languages and adds colors -->
-    <script src="https://cloudflare.com"></script>
+   
     <title>AI Assistant by Callitus</title>
-</script>
+
+</script><!-- Stylesheet for code themes (cdnjs - fast global delivery) -->
+    <link rel="stylesheet" href="https://cloudflare.com">
+
+    <!-- Markdown Compiler (unpkg network) -->
+    <script src="https://unpkg.com"></script>
+
+    <!-- Syntax Highlighter engine (cdnjs) -->
+    <script src="https://cloudflare.com"></script>
 // Tell the markdown engine to use highlight.js for styling code
-marked.setOptions({
+marked.marked.setOptions({
     highlight: function(code, lang) {
       const language = hljs.getLanguage(lang) ? lang : 'plaintext';
       return hljs.highlight(code, { language }).value;  
@@ -1072,7 +1075,7 @@ while (true) {
         }
           aiContentElement.innerHTML = `
         <span class="avatar-label" style="display: block; font-weight: bold; margin-bottom: 6px; color: #888;">Assistant</span>
-        <div class="markdown-content" style="line-height: 1.6; color: #ececec; word-break: break-word">${marked.parse(accumulatedAiResponse)}</div>
+        <div class="markdown-content" style="line-height: 1.6; color: #ececec; word-break: break-word">${marked.marked.parse(accumulatedAiResponse)}</div>
       `;
       chatContainer.scrollTop = chatContainer.scrollHeight;
     }
