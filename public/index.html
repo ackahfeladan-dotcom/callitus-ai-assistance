@@ -10,28 +10,19 @@
 <!-- Stylesheet for code syntax highlighting -->
     <link rel="stylesheet" href="https://cloudflare.com">
 
-    <!-- Markdown Compiler Library -->
-    <script src="https://cloudflare.com"></script>
-
-    <!-- Syntax Highlighter Engine -->
-    <script src="https://cloudflare.com"></script>
-
+    <!-- Guaranteed Fallback System + Library Loaders -->
     <script>
-        // Safely initialize marked as soon as the scripts load
-        (function() {
-            const checkLoaded = setInterval(() => {
-                if (typeof marked !== 'undefined') {
-                    clearInterval(checkLoaded);
-                    const renderer = new marked.Renderer();
-                    marked.use({
-                        renderer: renderer,
-                        breaks: true,
-                        gfm: true
-                    });
-                }
-            }, 50);
-        })();
+        // 1. Instantly define a safe fallback function so sendMessage never crashes
+        window.marked = {
+            parse: function(text) { return text; },
+            Renderer: function() { return {}; },
+            use: function() {}
+        };
     </script>
+
+    <!-- Load the heavy libraries asynchronously -->
+    <script src="https://cloudflare.com" async></script>
+    <script src="https://cloudflare.com" async></script>
 </script>
     <style>
 
