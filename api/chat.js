@@ -2,7 +2,7 @@ import { ChatGroq } from "@langchain/groq";
 import { HumanMessage, SystemMessage, AIMessage } from "@langchain/core/messages";
 
 export const config = {
-  runtime: 'edge', 
+  runtime: 'edge',  
 };
 
 export default async function handler(req) {
