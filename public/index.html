@@ -16,15 +16,15 @@
     <!-- Syntax Highlighter engine -->
     <script src="https://cloudflare.com"></script>
 
-
-// Tell the markdown engine to use highlight.js for styling code
-marked.setOptions({
-    highlight: function(code, lang) {
-        const language = hljs.getLanguage(lang) ? lang : 'plaintext';
-        return hljs.highlight(code, { language }).value;
-    },
-    breaks: true
-});
+    <script>
+        const renderer = new marked.Renderer();
+        marked.use({
+            renderer,
+            breaks: true,
+            gfm: true,
+            async: false
+        });
+    </script>
 </script>
     <style>
 
