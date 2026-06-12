@@ -1221,35 +1221,35 @@ aiContentElement.innerHTML = `
 // 2. High-Fidelity Plain Text Document Processor
     let cleanText = accumulatedAiResponse;
     
-    while (true) {
+  while (true) {
             const { done, value } = await reader.read();
             if (done) break;
 
             const chunk = decoder.decode(value, { stream: true });
             accumulatedAiResponse += chunk;
 
-            // Self-contained logic to break up code and normal text
+            // Split the response to find triple backtick code blocks
             let parts = accumulatedAiResponse.split(/```/g);
             let combinedHtml = '';
 
             for (let i = 0; i < parts.length; i++) {
                 if (i % 2 === 1) {
-                    // This section is code! Isolate language and code contents
+                    // This section is code. Isolate language and contents
                     let lines = parts[i].split('\n');
                     let displayCode = lines.slice(1).join('\n').trim();
                     
-                    // Prevent browser execution by escaping brackets safely
+                    // Escape code tags so the browser displays them as text
                     let safeCode = displayCode
                         .replace(/&/g, "&amp;")
                         .replace(/</g, "&lt;")
                         .replace(/>/g, "&gt;");
 
                     combinedHtml += `
-                        <div class="code-container" style="margin: 16px 0; border: 1px solid #444; border-radius: 8px; overflow: hidden; font-family: monospace;">
-                            <div class="code-header" style="background: #2d2d2d; color: #aaa; padding: 6px 14px; font-size: 0.85em; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #444;">
-                                <span>Source Code Block</span>
+                        <div class="code-container" style="margin: 16px 0; border: 1px solid #444; border-radius: 8px; overflow: hidden; font-family: monospace; text-align: left;">
+                            <div class="code-header" style="background: #2d2d2d; color: #aaa; padding: 8px 14px; font-size: 0.85em; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #444;">
+                                <span style="font-weight: bold; color: #4facfe;">Source Code</span>
                             </div>
-                            <pre style="background: #1e1e1e; color: #d4d4d4; padding: 14px; margin: 0; overflow-x: auto; white-space: pre;"><code>${safeCode}</code></pre>
+                            <pre style="background: #1e1e1e; color: #d4d4d4; padding: 14px; margin: 0; overflow-x: auto; white-space: pre; font-size: 0.95em; line-height: 1.5;"><code>${safeCode}</code></pre>
                         </div>
                     `;
                 } else {
