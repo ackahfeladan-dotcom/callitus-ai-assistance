@@ -1221,38 +1221,61 @@ aiContentElement.innerHTML = `
 // 2. High-Fidelity Plain Text Document Processor
     let cleanText = accumulatedAiResponse;
     
- while (true) {
+while (true) {
             const { done, value } = await reader.read();
             if (done) break;
 
             const chunk = decoder.decode(value, { stream: true });
             accumulatedAiResponse += chunk;
 
+            // Split the response to isolate backtick code blocks cleanly
             let parts = accumulatedAiResponse.split(/```/g);
             let combinedHtml = '';
 
             for (let i = 0; i < parts.length; i++) {
                 if (i % 2 === 1) {
+                    // This section is a code block
                     let lines = parts[i].split('\n');
+                    let language = lines[0] ? lines[0].trim() : "code";
                     let displayCode = lines.slice(1).join('\n').trim();
-                    let safeCode = displayCode.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+                    
+                    let safeCode = displayCode
+                        .replace(/&/g, "&amp;")
+                        .replace(/</g, "&lt;")
+                        .replace(/>/g, "&gt;");
 
                     combinedHtml += `
-                        <div style="margin: 16px 0; border: 1px solid #444; border-radius: 8px; overflow: hidden; font-family: monospace; text-align: left;">
-                            <div style="background: #2d2d2d; color: #4facfe; padding: 8px 14px; font-size: 0.85em; border-bottom: 1px solid #444; font-weight: bold;">
-                                Source Code Block
+                        <div style="margin: 20px 0; border: 1px solid #444; border-radius: 8px; overflow: hidden; font-family: monospace; text-align: left; box-shadow: 0 4px 6px rgba(0,0,0,0.3);">
+                            <div style="background: #2d2d2d; color: #4facfe; padding: 10px 16px; font-size: 0.85em; border-bottom: 1px solid #444; font-weight: bold; display: flex; justify-content: space-between;">
+                                <span>${language.toUpperCase()} CODE</span>
                             </div>
-                            <pre style="background: #1e1e1e; color: #d4d4d4; padding: 14px; margin: 0; overflow-x: auto; white-space: pre; font-size: 0.95em; line-height: 1.5;"><code>${safeCode}</code></pre>
+                            <pre style="background: #1e1e1e; color: #d4d4d4; padding: 16px; margin: 0; overflow-x: auto; white-space: pre; font-size: 0.95em; line-height: 1.5; font-family: 'Consolas', monospace;"><code>${safeCode}</code></pre>
                         </div>
                     `;
                 } else {
-                    combinedHtml += parts[i].replace(/\n/g, '<br>');
+                    // This section is conversational text layout - Parse paragraphs and lists
+                    let textSegment = parts[i];
+                    
+                    // Convert markdown bullet points (- or *) into nice visual blocks
+                    textSegment = textSegment.replace(/^\s*[\-\*]\s+(.+)$/gm, '<div style="margin-left: 20px; margin-bottom: 6px; display: list-item; list-style-type: disc;">$1</div>');
+                    
+                    // Convert numbered lists into proper list blocks
+                    textSegment = textSegment.replace(/^\s*(\d+)\.\s+(.+)$/gm, '<div style="margin-left: 20px; margin-bottom: 8px; display: list-item; list-style-type: decimal;">$2</div>');
+                    
+                    // Convert double newlines into clean paragraph spacing blocks
+                    let paragraphs = textSegment.split(/\n\n+/g);
+                    let formattedParagraphs = paragraphs.map(p => {
+                        let cleanP = p.trim().replace(/\n/g, '<br>');
+                        return cleanP ? <p style="margin: 0 0 16px 0; line-height: 1.7; font-size: 1.05em; color: #f0f0f0;">${cleanP}</p> : '';
+                    }).join('');
+                    
+                    combinedHtml += formattedParagraphs;
                 }
             }
 
             aiContentElement.innerHTML = `
-                <span class="avatar-label" style="display: block; font-weight: bold; margin-bottom: 6px; color: #4facfe;">Assistant</span>
-                <div class="markdown-content" style="line-height: 1.6; color: #ececec; word-break: break-word;">
+                <span class="avatar-label" style="display: block; font-weight: bold; margin-bottom: 8px; color: #4facfe; font-size: 1.1em;">Assistant</span>
+                <div class="markdown-content" style="word-break: break-word; text-align: left;">
                     ${combinedHtml}
                 </div>
             `;
