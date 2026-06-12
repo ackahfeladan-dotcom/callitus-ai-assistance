@@ -1084,16 +1084,18 @@ while (true) {
             const chunk = decoder.decode(value, { stream: true });
             accumulatedAiResponse += chunk;
 
-            // Render with marked parser, falling back to raw text if loading failed
-            const renderedContent = typeof marked !== 'undefined' ? marked.parse(accumulatedAiResponse) : accumulatedAiResponse;
+          // Check safely if window.marked exists without throwing an error
+let renderedContent = accumulatedAiResponse;
+if (window.marked && typeof window.marked.parse === 'function') {
+    renderedContent = window.marked.parse(accumulatedAiResponse);
+}
 
-            aiContentElement.innerHTML = `
-                <span class="avatar-label" style="display: block; font-weight: bold; margin-bottom: 6px;">Assistant</span>
-                <div class="markdown-content" style="line-height: 1.6; color: #ececec; word-break: break-word;">
-                    ${renderedContent}
-                </div>
-            `;
-
+aiContentElement.innerHTML = `
+    <span class="avatar-label" style="display: block; font-weight: bold; margin-bottom: 6px;">Assistant</span>
+    <div class="markdown-content" style="line-height: 1.6; color: #ececec; word-break: break-word;">
+        ${renderedContent}
+    </div>
+`;  
             chatContainer.scrollTop = chatContainer.scrollHeight;
         }
       
