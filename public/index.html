@@ -7,6 +7,22 @@
    
     <title>AI Assistant by Callitus</title>
 
+    <script>
+// Safety shield to prevent "marked is not defined" crashes
+if (typeof marked === 'undefined') {
+    window.marked = {
+        parse: function(text) {
+            // Clean up code tags and safely format line breaks
+            return text
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/\n/g, "<br>");
+        }
+    };
+}
+</script>
+
 <!-- Stylesheet for code syntax highlighting -->
     <link rel="stylesheet" href="https://cloudflare.com">
 
