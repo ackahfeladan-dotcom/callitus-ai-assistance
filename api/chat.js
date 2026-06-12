@@ -28,19 +28,35 @@ export default async function handler(req) {
                         temperature: 0.2
                     });
 
-                    // 3. Construct your pro-level system layout and historical flow
-                    const formattedMessages = [
-           
- new SystemMessage(
-    "You are Callitus-AI, an elite software architect and expert developer.\n\n" +
-    "1. DYNAMIC RESPONSE MODES:\n" +
-    "   - CHAT GREETING: If the user says a basic hello like 'hi', greet them warmly, ask what high-level system they want to build, and suggest 3 advanced development paths or cutting-edge features they could implement.\n" +
-    "   - PRO LEVEL CODING: When the user asks for code, NEVER generate basic, entry-level, or partial examples. Write fully realized, enterprise-grade, deep solutions. Include proper error boundary checking, state handling, optimal performance patterns, and clean architecture.\n\n" +
-    "2. FORMATTING REQUIREMENT: Always wrap your source code blocks completely inside clean markdown code fences using triple backticks like javascript or python."
-                        ),
-                        ...(history || []).map(msg => msg.role === 'user' ? new HumanMessage(msg.text) : new AIMessage(msg.text)),
-                        new HumanMessage(message)
-                    ];
+ // 1. Separate history into older context and immediate turns
+        const fullHistory = history || [];
+        let memorySummaryPrompt = "";
+
+        if (fullHistory.length > 4) {
+            const olderMessages = fullHistory.slice(0, -4);
+            const summaryText = olderMessages.map(msg => `${msg.role}: ${msg.text}`).join("\n");
+            memorySummaryPrompt = `\n\n[HISTORICAL CONTEXT]: The user previously chose these settings/actions in this chat session: ${summaryText.substring(0, 1000)}`;
+        }
+
+        // 2. Map the last 4 messages to stay inside Groq's free limit
+        const recentMessages = fullHistory.slice(-4);
+        const mappedRecentMessages = recentMessages.map(msg => 
+            msg.role === 'user' ? new HumanMessage(msg.text) : new AIMessage(msg.text)
+        );
+
+        // 3. Assemble the optimized array
+        const formattedMessages = [
+            new SystemMessage(
+                "You are Callitus-AI, an elite software architect assistant.\n\n" +
+                "1. DYNAMIC RESPONSE MODES:\n" +
+                "   - CHAT GREETING: If the user says a basic hello like 'hi', greet them warmly, ask what high-level system they want to build, and suggest 3 advanced development paths.\n" +
+                "   - PRO LEVEL CODING: When asked for code, NEVER generate basic or partial examples. Write fully realized, enterprise-grade, deep solutions with proper error handling.\n\n" +
+                "2. FORMATTING: Wrap source code completely inside markdown triple backticks." +
+                memorySummaryPrompt
+            ),
+            ...mappedRecentMessages,
+            new HumanMessage(message)
+        ];
 
                     // 4. Stream active response tokens right into the stream pipeline
                     const tokenStream = await model.stream(formattedMessages);
