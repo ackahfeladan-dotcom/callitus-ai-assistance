@@ -1221,49 +1221,52 @@ aiContentElement.innerHTML = `
 // 2. High-Fidelity Plain Text Document Processor
     let cleanText = accumulatedAiResponse;
     
-    // Normalize string-escaped newline characters securely
-    while (cleanText.includes("\\n")) {
-      cleanText = cleanText.replace("\\n", "\n");
-    }
+    while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
 
-    let paragraphs = cleanText.split("\n");
-    let parsedHTML = "";
+            const chunk = decoder.decode(value, { stream: true });
+            accumulatedAiResponse += chunk;
 
-    paragraphs.forEach(function(p) {
-      let line = p.trim();
-      if (!line) return;
+            // Self-contained logic to break up code and normal text
+            let parts = accumulatedAiResponse.split(/```/g);
+            let combinedHtml = '';
 
-      // Formats Double Hashtag Headers into clean titles
-      if (line.startsWith("## ")) {
-        let cleanHeader = line.replace("## ", "");
-        parsedHTML += '<h2 style="margin: 20px 0 8px 0; font-size: 1.4rem; color: #ffffff; font-weight: 700; display: block;">' + cleanHeader + '</h2>';
-      }
-      // Formats Triple Hashtag Headers into clean subtitles
-      else if (line.startsWith("### ")) {
-        let cleanHeader = line.replace("### ", "");
-        parsedHTML += '<h3 style="margin: 18px 0 6px 0; font-size: 1.25rem; color: #ffffff; font-weight: 600; border-bottom: 1px solid #2f2f2f; padding-bottom: 4px; display: block;">' + cleanHeader + '</h3>';
-      } 
-      // Formats Bullet items into beautifully indented rows
-      else if (line.startsWith("- ") || line.startsWith("* ")) {
-        let cleanItem = line.substring(2);
-        parsedHTML += '<li style="margin: 6px 0 6px 20px; color: #e3e3e3; list-style-type: disc; display: list-item;">' + cleanItem + '</li>';
-      } 
-      // Standard paragraph text block handling
-      else {
-        let processedLine = line;
-        while (processedLine.includes("**")) {
-          processedLine = processedLine.replace("*", '<strong style="color: #ffffff; font-weight: 600;">').replace("*", "</strong>");
+            for (let i = 0; i < parts.length; i++) {
+                if (i % 2 === 1) {
+                    // This section is code! Isolate language and code contents
+                    let lines = parts[i].split('\n');
+                    let displayCode = lines.slice(1).join('\n').trim();
+                    
+                    // Prevent browser execution by escaping brackets safely
+                    let safeCode = displayCode
+                        .replace(/&/g, "&amp;")
+                        .replace(/</g, "&lt;")
+                        .replace(/>/g, "&gt;");
+
+                    combinedHtml += `
+                        <div class="code-container" style="margin: 16px 0; border: 1px solid #444; border-radius: 8px; overflow: hidden; font-family: monospace;">
+                            <div class="code-header" style="background: #2d2d2d; color: #aaa; padding: 6px 14px; font-size: 0.85em; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #444;">
+                                <span>Source Code Block</span>
+                            </div>
+                            <pre style="background: #1e1e1e; color: #d4d4d4; padding: 14px; margin: 0; overflow-x: auto; white-space: pre;"><code>${safeCode}</code></pre>
+                        </div>
+                    `;
+                } else {
+                    // This section is normal conversational text
+                    combinedHtml += parts[i].replace(/\n/g, '<br>');
+                }
+            }
+
+            aiContentElement.innerHTML = `
+                <span class="avatar-label" style="display: block; font-weight: bold; margin-bottom: 6px; color: #4facfe;">Assistant</span>
+                <div class="markdown-content" style="line-height: 1.6; color: #ececec; word-break: break-word;">
+                    ${combinedHtml}
+                </div>
+            `;
+
+            chatContainer.scrollTop = chatContainer.scrollHeight;
         }
-        parsedHTML += '<p style="margin: 0 0 12px 0; line-height: 1.7; color: #e3e3e3; font-size: 0.95rem; display: block;">' + processedLine + '</p>';
-      }
-    });
-
-
-    // 3. Inject the beautifully structured document layout directly into the chat element container
-    aiContentElement.innerHTML = `
-      <span class="avatar-label" style="display: block; font-weight: bold; margin-bottom: 10px; color: #aaa; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px;">Assistant</span>
-      <div class="premium-document-layout" style="word-break: break-word;">${parsedHTML}</div>
-    `;
         let suggestions = [];
 // --- SMART TEXT KANBAN PARSING LOGIC ---
         if (mainContent.includes("To Do") || mainContent.includes("To-Do")) {
