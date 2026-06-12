@@ -1220,11 +1220,11 @@ while (true) {
                     textSegment = textSegment.replace(/^\s*[\-\*]\s+(.+)$/gm, '<div style="margin-left: 20px; margin-bottom: 6px; display: list-item; list-style-type: disc;">$1</div>');
                     textSegment = textSegment.replace(/^\s*(\d+)\.\s+(.+)$/gm, '<div style="margin-left: 20px; margin-bottom: 8px; display: list-item; list-style-type: decimal;">$2</div>');
                     
-                    let paragraphs = textSegment.split(/\n\n+/g);
-                    let formattedParagraphs = paragraphs.map(p => {
-                        let cleanP = p.trim().replace(/\n/g, '<br>');
-                        return cleanP ? <p style="margin: 0 0 16px 0; line-height: 1.7; font-size: 1.05em; color: #f0f0f0;">${cleanP}</p> : '';
-                    }).join('');
+               let paragraphs = textSegment.split(/\n\n+/g);
+            let formattedParagraphs = paragraphs.map(p => {
+                let cleanP = p.trim().replace(/\n/g, '<br>');
+                return cleanP ? <p style="margin: 0 0 16px 0; line-height: 1.7; font-size: 1.05em; color: #f0f0f0;">${cleanP}</p> : '';
+            }).join('');
                     
                     combinedHtml += formattedParagraphs;
                 }
