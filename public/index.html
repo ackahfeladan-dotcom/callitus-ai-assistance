@@ -7,13 +7,36 @@
    
     <title>AI Assistant by Callitus</title>
 
- <script>
-// Updated safety shield to render layout tags beautifully
+<script>
 if (typeof marked === 'undefined') {
     window.marked = {
         parse: function(text) {
-            // Let the browser execute the formatting tags and handle line breaks
-            return text.replace(/\n/g, "<br>");
+            if (!text) return '';
+            
+            // Protect code blocks from global newline replacement
+            let tokens = text.split(/```/g);
+            let htmlResult = '';
+            
+            for (let i = 0; i < tokens.length; i++) {
+                if (i % 2 === 1) {
+                    // This is inside a code block
+                    let lines = tokens[i].split('\n');
+                    let language = lines[0].trim();
+                    let codeContent = lines.slice(1).join('\n').trim();
+                    
+                    // Escape raw tags inside the code block safely
+                    let cleanCode = codeContent
+                        .replace(/&/g, "&amp;")
+                        .replace(/</g, "&lt;")
+                        .replace(/>/g, "&gt;");
+                        
+                    htmlResult += <pre style="background: #1e1e1e; color: #d4d4d4; padding: 16px; border-radius: 8px; overflow-x: auto; font-family: monospace; margin: 12px 0; border: 1px solid #333; position: relative;"><code class="language-${language}">${cleanCode}</code></pre>;
+                } else {
+                    // This is regular text layout
+                    htmlResult += tokens[i].replace(/\n/g, "<br>");
+                }
+            }
+            return htmlResult;
         }
     };
 }
