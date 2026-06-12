@@ -1330,7 +1330,7 @@ aiContentElement.innerHTML = `
         }
 
         // Update the visible AI text window box dynamically with cleaned text
-        aiContentElement.innerHTML = `<span class="avatar-label" style="display: block; font-weight: bold; margin-bottom: 6px; color: #fff;">Assistant</span>${marked.parse(mainContent)}`;
+        aiContentElement.innerHTML = `<span class="avatar-label" style="display: block; font-weight: bold; margin-bottom: 6px; color: #fff;">Assistant</span>${mainContent.replace}`;
 
         // Render Action Buttons underneath
         const oldChips = document.querySelector(".chips-container");
