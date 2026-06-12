@@ -44,7 +44,7 @@ export default async function handler(req) {
                             "4. The absolute final line of your output must always contain your suggestion tokens separated by pipes like this:\n" +
                             "||| Suggestion 1 | Suggestion 2 | Suggestion 3"
                         ),
-                        ...(history || []).map(msg => msg.role === 'user' ? new HumanMessage(msg.content) : new AIMessage(msg.content)),
+                        ...(history || []).map(msg => msg.role === 'user' ? new HumanMessage(msg.text) : new AIMessage(msg.text)),
                         new HumanMessage(message)
                     ];
 
