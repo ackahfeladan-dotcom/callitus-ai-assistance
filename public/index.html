@@ -19,31 +19,33 @@ window.marked = undefined;
 </script>
     <style>
 
- body, html, main, #app, .app, .container, .chat-container, .main-content {
-    background-color: #171717 !important;
-    color: #ececec !important;
+/* ☀️ DEFAULT LIGHT MODE (White Theme) */
+body, html, main, #app, .app, .container, .chat-container, .main-content {
+    background-color: #ffffff !important;
+    color: #101214 !important;
 }
-
-/* Fix any inner layout sheets or panels */
 div[class*="content"], div[class*="wrapper"], div[class*="main"] {
-    background-color: #171717 !important;
+    background-color: #ffffff !important;
 }
-
-/* Sidebar styling */
 .sidebar, [class*="sidebar"], aside {
-    background-color: #0d0d0d !important;
-    border-right: 1px solid #2f2f2f !important;
-}       
-
-  body, html {
-    background-color: #171717 !important;
-    color: #ececec !important;
+    background-color: #f9f9f9 !important;
+    border-right: 1px solid #e5e5e5 !important;
 }
 
-/* If your main chat container or sidebar has a specific class, we override them too */
-.sidebar, [class*="sidebar"] {
-    background-color: #0d0d0d !important;
-}      
+/* 🌙 AUTOMATIC DARK MODE (Deep ChatGPT Theme) */
+@media (prefers-color-scheme: dark) {
+    body, html, main, #app, .app, .container, .chat-container, .main-content {
+        background-color: #171717 !important;
+        color: #ececec !important;
+    }
+    div[class*="content"], div[class*="wrapper"], div[class*="main"] {
+        background-color: #171717 !important;
+    }
+    .sidebar, [class*="sidebar"], aside {
+        background-color: #0d0d0d !important;
+        border-right: 1px solid #2f2f2f !important;
+    }
+}
 
  /* Container for multiline code blocks */
 pre {
