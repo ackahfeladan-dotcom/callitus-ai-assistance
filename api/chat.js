@@ -34,14 +34,14 @@ export default async function handler(req) {
 
         if (fullHistory.length > 4) {
             const olderMessages = fullHistory.slice(0, -4);
-            const summaryText = olderMessages.map(msg => `${msg.role}: ${msg.text}`).join("\n");
+            const summaryText = olderMessages.map(msg => `${msg.role}: ${msg.message}`).join("\n");
             memorySummaryPrompt = `\n\n[HISTORICAL CONTEXT]: The user previously chose these settings/actions in this chat session: ${summaryText.substring(0, 1000)}`;
         }
 
         // 2. Map the last 4 messages to stay inside Groq's free limit
         const recentMessages = fullHistory.slice(-4);
         const mappedRecentMessages = recentMessages.map(msg => 
-            msg.role === 'user' ? new HumanMessage(msg.text) : new AIMessage(msg.text)
+            msg.role === 'user' ? new HumanMessage(msg.message) : new AIMessage(msg.message)
         );
 
         // 3. Assemble the optimized array
