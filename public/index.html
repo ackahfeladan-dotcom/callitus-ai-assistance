@@ -1213,8 +1213,8 @@ while (true) {
                                 <span>${language.toUpperCase() || 'CODE'}</span>
                             </div>
                             <pre style="background: #1e1e1e; color: #d4d4d4; padding: 16px; margin: 0; overflow-x: auto; white-space: pre; font-size: 0.95em; line-height: 1.5;"><code>${safeCode}</code></pre>
-                        </div>
-                    `;
+                        </div>`;
+                    
                 } else {
                     let textSegment = parts[i];
                     textSegment = textSegment.replace(/^\s*[\-\*]\s+(.+)$/gm, '<div style="margin-left: 20px; margin-bottom: 6px; display: list-item; list-style-type: disc;">$1</div>');
@@ -1223,7 +1223,7 @@ while (true) {
                let paragraphs = textSegment.split(/\n\n+/g);
             let formattedParagraphs = paragraphs.map(p => {
                 let cleanP = p.trim().replace(/\n/g, '<br>');
-                return cleanP ? <p style="margin: 0 0 16px 0; line-height: 1.7; font-size: 1.05em; color: #f0f0f0;">${cleanP}</p> : '';
+                return cleanP ? `<p style="margin: 0 0 16px 0; line-height: 1.7; font-size: 1.05em; color: #f0f0f0;">${cleanP}</p>` : '';
             }).join('');
                     
                     combinedHtml += formattedParagraphs;
