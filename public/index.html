@@ -19,57 +19,6 @@ window.marked = undefined;
 </script>
     <style>
 
-      /* Fix input bar positioning and layout centering */
-#input-area-container {
-    position: absolute !important;
-    bottom: 24px !important;
-    left: 50% !important;
-    transform: translateX(-50%) !important;
-    width: 90% !important;
-    max-width: 768px !important;
-    z-index: 100 !important;
-}
-
-/* Make the dark input container capsule visible */
-#input-wrapper {
-    position: relative !important;
-    display: flex !important;
-    align-items: center !important;
-    width: 100% !important;
-    background-color: #212121 !important;
-    border: 1px solid #2f2f2f !important;
-    border-radius: 24px !important;
-    padding: 6px 12px !important;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.3) !important;
-}
-
-/* Make text box blend into the dark container */
-#user-input {
-    flex-grow: 1 !important;
-    background: transparent !important;
-    border: none !important;
-    outline: none !important;
-    color: #ececec !important;
-    font-size: 1em !important;
-    padding: 8px 12px !important;
-}
-
-/* Style the attachment paperclip icon button color */
-#chatgpt-attach-btn {
-    color: #ececec !important;
-}
-
-/* Style the send button layout */
-#send-btn {
-    background: #ececec !important;
-    border: none !important;
-    color: #171717 !important;
-    border-radius: 20px !important;
-    padding: 6px 16px !important;
-    font-weight: bold !important;
-    cursor: pointer !important;
-}  
-
 /* ☀️ DEFAULT LIGHT MODE (White Theme) */
 body, html, main, #app, .app, .container, .chat-container, .main-content {
     background-color: #ffffff !important;
@@ -956,7 +905,7 @@ pre {
         <div class="mobile-nav-bar">
             <button onclick="toggleMobileSidebar()" class="mobile-menu-trigger">☰ Menu</button>
         </div>
-        <div id="chat-container" style="display: flex; flex-direction: column; justify-content: space-between; height: calc(100vh - 60px); padding-bottom: 40px; box-sizing: border-box;"></div>
+        <div id="chat-container">
   <div class="chat-wrapper onboarding-wrapper">
         <h1 class="welcome-heading">How can I assist you with your projects today?</h1>
  </div>
