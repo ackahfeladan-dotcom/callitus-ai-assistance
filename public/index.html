@@ -19,6 +19,22 @@ window.marked = undefined;
 </script>
     <style>
 
+ body, html, main, #app, .app, .container, .chat-container, .main-content {
+    background-color: #171717 !important;
+    color: #ececec !important;
+}
+
+/* Fix any inner layout sheets or panels */
+div[class*="content"], div[class*="wrapper"], div[class*="main"] {
+    background-color: #171717 !important;
+}
+
+/* Sidebar styling */
+.sidebar, [class*="sidebar"], aside {
+    background-color: #0d0d0d !important;
+    border-right: 1px solid #2f2f2f !important;
+}       
+
   body, html {
     background-color: #171717 !important;
     color: #ececec !important;
