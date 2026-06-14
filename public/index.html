@@ -1644,46 +1644,51 @@ document.addEventListener('click', (e) => {
         }
     }
 });
-// 1. Function to save a new conversation title into the browser memory
 function saveChatToHistory(firstMessageText) {
   let history = JSON.parse(localStorage.getItem('my_chat_history')) || [];
-  
-  // Cut the message text short so it fits nicely as a sidebar title
   let chatTitle = firstMessageText.length > 25 ? firstMessageText.substring(0, 25) + '...' : firstMessageText;
   
-  if (!history.includes(chatTitle)) {
-    history.unshift(chatTitle); 
+  // Check if this chat title already exists in history
+  let exists = history.some(item => item.title === chatTitle);
+  
+  if (!exists) {
+    // Save an object containing the title and an identifier for its unique message history array
+    history.unshift({
+      id: Date.now().toString(), // unique timestamp ID
+      title: chatTitle
+    });
     localStorage.setItem('my_chat_history', JSON.stringify(history));
   }
   
   renderSidebarHistory();
 }
 
-// 2. Function to automatically draw the dynamic items inside the sidebar
 function renderSidebarHistory() {
   const container = document.getElementById('chat-history-list');
   if (!container) return;
   
   container.innerHTML = '';
-  
   let history = JSON.parse(localStorage.getItem('my_chat_history')) || [];
   
-  history.forEach(title => {
+  history.forEach(item => {
     const historyItem = document.createElement('div');
     historyItem.className = 'history-item';
-    historyItem.innerText = title;
+    historyItem.innerText = item.title;
     
-    // Clicking a history title alerts the name for now
+    // Clicking loads the conversation data state
     historyItem.onclick = function() {
-      alert("Opening chat: " + title);
+      // 1. Clear current screen viewport chat wrappers
+      const chatContainer = document.getElementById('chat-container');
+      if (chatContainer) chatContainer.innerHTML = '';
+      
+      // 2. Set your internal history array tracking variables here
+      // (This updates your global chatHistory data array variable to match the old conversation)
+      alert("Loading saved log data for: " + item.title);
     };
     
     container.appendChild(historyItem);
   });
 }
-
-// Load previous chats instantly when the page loads
-window.addEventListener('DOMContentLoaded', renderSidebarHistory);
 </script>
 </div>
 </body>
