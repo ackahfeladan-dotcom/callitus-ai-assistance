@@ -917,6 +917,48 @@ pre {
     max-width: 100% !important;
     box-sizing: border-box !important;
   }
+  /* Keeps the profile box pinned to the bottom of the sidebar */
+.sidebar-footer {
+  margin-top: auto; /* Pushes the container to the very bottom */
+  padding-top: 12px;
+  border-top: 1px solid #333333; /* Clean subtle separation line */
+  width: 100%;
+}
+
+/* Flex layout for the avatar icon and text name row */
+.user-profile-box {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.user-profile-box:hover {
+  background-color: #2a2b32; /* Subtle highlight on hover */
+}
+
+/* Small placeholder circle for the profile picture icon */
+.avatar-circle {
+  width: 32px;
+  height: 32px;
+  background-color: #5436da; /* Clean primary accent background */
+  color: #ffffff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.user-name {
+  color: #ececec;
+  font-size: 14px;
+  font-weight: 500;
+}
 </style>
 </head>
 <body>
@@ -933,6 +975,12 @@ pre {
    <div class="chat-history-list" id="chat-history-list">
   <!-- Keep this completely empty. JavaScript will inject real history items here dynamically -->
 </div>
+    <div class="sidebar-footer">
+    <div class="user-profile-box">
+      <div class="avatar-circle">C</div>
+      <span class="user-name">Callitus</span>
+    </div>
+  </div>  
 
   </div> <!-- This closing div is your original line 899 -->
     <!-- Main Window Area -->
