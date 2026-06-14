@@ -959,6 +959,17 @@ pre {
   font-size: 14px;
   font-weight: 500;
 }
+
+.sidebar-date-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: #666666; /* Matte dark gray font color */
+  padding: 0 12px;
+  margin-top: 15px;
+  margin-bottom: 5px;
+  text-transform: uppercase; /* Forces text to display cleanly in caps */
+  letter-spacing: 0.5px;
+}
 </style>
 </head>
 <body>
@@ -971,6 +982,8 @@ pre {
       Project Assistant Engine
       <strong>By Callitus</strong>
     </div>
+       <!-- 3. The Subtle Chat Timeline Label -->
+    <div class="sidebar-date-label">Recent</div>
 
    <div class="chat-history-list" id="chat-history-list">
   <!-- Keep this completely empty. JavaScript will inject real history items here dynamically -->
