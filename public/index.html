@@ -930,12 +930,9 @@ pre {
       <strong>By Callitus</strong>
     </div>
 
-    <!-- ADD THIS NEW BLOCK BELOW FOR YOUR CHAT HISTORY -->
-    <div class="chat-history-list">
-      <div class="history-item active">AI Video Prompt Creation</div>
-      <div class="history-item">Greeting Interaction</div>
-      <div class="history-item">Ghana Puma Jersey Request</div>
-    </div>
+   <div class="chat-history-list" id="chat-history-list">
+  <!-- Keep this completely empty. JavaScript will inject real history items here dynamically -->
+</div>
 
   </div> <!-- This closing div is your original line 899 -->
     <!-- Main Window Area -->
@@ -1126,6 +1123,9 @@ function copyBlockContent(buttonElement) {
     async function sendMessage() {
         const text = userInput.value.trim();
         if (!text) return;
+        if (!chatHistory || chatHistory.length === 0) {
+    saveChatToHistory(text);
+  }
 
         userInput.value = '';
 
@@ -1644,6 +1644,46 @@ document.addEventListener('click', (e) => {
         }
     }
 });
+// 1. Function to save a new conversation title into the browser memory
+function saveChatToHistory(firstMessageText) {
+  let history = JSON.parse(localStorage.getItem('my_chat_history')) || [];
+  
+  // Cut the message text short so it fits nicely as a sidebar title
+  let chatTitle = firstMessageText.length > 25 ? firstMessageText.substring(0, 25) + '...' : firstMessageText;
+  
+  if (!history.includes(chatTitle)) {
+    history.unshift(chatTitle); 
+    localStorage.setItem('my_chat_history', JSON.stringify(history));
+  }
+  
+  renderSidebarHistory();
+}
+
+// 2. Function to automatically draw the dynamic items inside the sidebar
+function renderSidebarHistory() {
+  const container = document.getElementById('chat-history-list');
+  if (!container) return;
+  
+  container.innerHTML = '';
+  
+  let history = JSON.parse(localStorage.getItem('my_chat_history')) || [];
+  
+  history.forEach(title => {
+    const historyItem = document.createElement('div');
+    historyItem.className = 'history-item';
+    historyItem.innerText = title;
+    
+    // Clicking a history title alerts the name for now
+    historyItem.onclick = function() {
+      alert("Opening chat: " + title);
+    };
+    
+    container.appendChild(historyItem);
+  });
+}
+
+// Load previous chats instantly when the page loads
+window.addEventListener('DOMContentLoaded', renderSidebarHistory);
 </script>
 </div>
 </body>
