@@ -193,6 +193,12 @@ body, .app-layout {
 /* --- Chat Workspace Layout --- */
 #main-chat {
   background-color: #131314;
+  .app-layout {
+  display: flex !important;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  }
 }
 
 .chat-wrapper {
@@ -983,26 +989,30 @@ pre {
      <!-- Add this new wrapper line right under <body> -->
     <div class="app-layout">
     <!-- Left Sidebar Panel -->
-    <div id="sidebar">
-    <button class="new-chat-btn" id="new-chat-btn" onclick="clearChat()">+ New chat</button>
- <div class="brand-box">
-      Project Assistant Engine
-      <strong>By Callitus</strong>
-    </div>
-       <!-- 3. The Subtle Chat Timeline Label -->
-    <div class="sidebar-date-label">Recent</div>
+  <div id="sidebar">
+  <!-- 1. Move the button here to the absolute top of the sidebar -->
+  <button class="new-chat-btn" id="new-chat-btn" onclick="clearChat()">+ New chat</button>
 
-   <div class="chat-history-list" id="chat-history-list">
-  <!-- Keep this completely empty. JavaScript will inject real history items here dynamically -->
-</div>
-    <div class="sidebar-footer">
+  <!-- 2. The branding box comes second -->
+  <div class="brand-box">
+    Project Assistant Engine
+    <strong>By Callitus</strong>
+  </div>
+
+  <!-- 3. The Recent label -->
+  <div class="sidebar-date-label">Recent</div>
+
+  <!-- 4. The chat list container -->
+  <div class="chat-history-list" id="chat-history-list"></div>
+
+  <!-- 5. The footer profile container -->
+  <div class="sidebar-footer">
     <div class="user-profile-box">
       <div class="avatar-circle">C</div>
       <span class="user-name">Callitus</span>
     </div>
-  </div>  
-
-  </div> <!-- This closing div is your original line 899 -->
+  </div>
+</div>
     <!-- Main Window Area -->
     <div id="main-chat">
      <!-- Mobile Top Navigation Bar -->
