@@ -19,6 +19,39 @@ window.marked = undefined;
 </script>
     <style>
 
+ /* Container that holds all previous chat items */
+.chat-history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 20px;
+  overflow-y: auto; /* Allows scrolling if you have a lot of chats */
+  flex: 1;
+}
+
+/* Individual history row styling */
+.history-item {
+  padding: 10px 12px;
+  border-radius: 6px;
+  color: #ececec;
+  font-size: 14px;
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis; /* Puts ... if the title is too long */
+  transition: background-color 0.2s ease;
+}
+
+/* Changes color when you hover over a past chat */
+.history-item:hover {
+  background-color: #2a2b32;
+}
+
+/* Highlights the specific chat conversation currently open */
+.history-item.active {
+  background-color: #343541;
+}       
+
 /* ☀️ DEFAULT LIGHT MODE (White Theme) */
 body, html, main, #app, .app, .container, .chat-container, .main-content {
     background-color: #ffffff !important;
@@ -892,12 +925,19 @@ pre {
     <!-- Left Sidebar Panel -->
     <div id="sidebar">
     <button class="new-chat-btn" id="new-chat-btn" onclick="clearChat()">+ New chat</button>
-        <div class="brand-box">
-            Project Assistant Engine
-            <strong>By Callitus</strong>
-        </div>
+ <div class="brand-box">
+      Project Assistant Engine
+      <strong>By Callitus</strong>
     </div>
 
+    <!-- ADD THIS NEW BLOCK BELOW FOR YOUR CHAT HISTORY -->
+    <div class="chat-history-list">
+      <div class="history-item active">AI Video Prompt Creation</div>
+      <div class="history-item">Greeting Interaction</div>
+      <div class="history-item">Ghana Puma Jersey Request</div>
+    </div>
+
+  </div> <!-- This closing div is your original line 899 -->
     <!-- Main Window Area -->
     <div id="main-chat">
      <!-- Mobile Top Navigation Bar -->
