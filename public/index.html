@@ -1662,7 +1662,6 @@ function saveChatToHistory(firstMessageText) {
   
   renderSidebarHistory();
 }
-
 function renderSidebarHistory() {
   const container = document.getElementById('chat-history-list');
   if (!container) return;
@@ -1673,22 +1672,26 @@ function renderSidebarHistory() {
   history.forEach(item => {
     const historyItem = document.createElement('div');
     historyItem.className = 'history-item';
-    historyItem.innerText = item.title;
     
-    // Clicking loads the conversation data state
+    // FIX: If the item is just text, use it. If it's an object, use item.title.
+    let displayTitle = (typeof item === 'object' && item !== null) ? item.title : item;
+    
+    // Skip rendering if something goes wrong or text is blank
+    if (!displayTitle) return;
+    
+    historyItem.innerText = displayTitle;
+    
     historyItem.onclick = function() {
-      // 1. Clear current screen viewport chat wrappers
       const chatContainer = document.getElementById('chat-container');
       if (chatContainer) chatContainer.innerHTML = '';
-      
-      // 2. Set your internal history array tracking variables here
-      // (This updates your global chatHistory data array variable to match the old conversation)
-      alert("Loading saved log data for: " + item.title);
+      alert("Opening chat: " + displayTitle);
     };
     
     container.appendChild(historyItem);
   });
 }
+
+
 </script>
 </div>
 </body>
