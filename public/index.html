@@ -65,6 +65,38 @@ div[class*="content"], div[class*="wrapper"], div[class*="main"] {
     background-color: #0d0d0d !important;
     border-right: 1px solid #2f2f2f !important;
 }
+
+/* 📱 CHATGPT SPEC LARGE MOBILE POP-UP MENU */
+#chatgpt-menu {
+    position: fixed !important;
+    bottom: 90px !important; /* Positions it perfectly above the input bar */
+    left: 5% !important;
+    width: 90% !important; /* Spreads wide across the mobile screen */
+    max-width: 340px !important;
+    background: #212121 !important;
+    border: 1px solid #2f2f2f !important;
+    border-radius: 14px !important;
+    padding: 8px !important;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5) !important;
+    display: none; /* Controlled by your script toggle */
+    flex-direction: column !important;
+    gap: 6px !important; /* Creates neat spacing between items */
+    z-index: 999999 !important;
+}
+
+/* Format the individual feature buttons inside the pop-up menu */
+#chatgpt-menu label, #chatgpt-menu div {
+    display: flex !important;
+    align-items: center !important;
+    gap: 14px !important; /* Neat space between icon and text */
+    padding: 14px 16px !important; /* Large touch area like ChatGPT */
+    color: #ececec !important;
+    font-size: 1.05em !important;
+    border-radius: 8px !important;
+    cursor: pointer !important;
+    transition: background 0.2s !important;
+    box-sizing: border-box !important;
+}
 /* 📱 EXACT CHATGPT MOBILE FULL-SCREEN SIDEBAR */
 @media (max-width: 768px) {
     /* Hide by default on mobile page load */
