@@ -1071,6 +1071,10 @@ pre {
 
   <!-- 4. The chat list container -->
   <div class="chat-history-list" id="chat-history-list"></div>
+  <button id="settings-trigger-btn" class="new-chat-btn" style="margin-top: auto; display: flex; align-items: center; gap: 8px;">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+    Settings
+</button>
 
   <!-- 5. The footer profile container -->
   <div class="sidebar-footer">
@@ -1835,9 +1839,43 @@ function renderSidebarHistory() {
     container.appendChild(historyItem);
   });
 }
-
+// Open settings modal when the sidebar trigger button is clicked
+const settingsTriggerBtn = document.getElementById('settings-trigger-btn');
+if (settingsTriggerBtn) {
+    settingsTriggerBtn.addEventListener('click', () => {
+        const modalElement = document.getElementById('settings-modal');
+        if (modalElement) {
+            modalElement.style.display = 'flex';
+        }
+    });
+}
 
 </script>
+</div>
+
+<div id="settings-modal">
+    <div class="settings-box">
+        <div class="settings-header">
+            <h3>Settings</h3>
+            <button id="close-settings-btn">×</button>
+        </div>
+        <div class="settings-content">
+            <div class="settings-row">
+                <div>
+                    <div class="settings-title">Delete all chats</div>
+                    <div class="settings-desc">Permanently clear out your current chat conversation data.</div>
+                </div>
+                <button id="delete-all-chats-btn">Delete all</button>
+            </div>
+            <div class="settings-row">
+                <div>
+                    <div class="settings-title">Chat history tracking</div>
+                    <div class="settings-desc">Save new messages to your conversation history logs.</div>
+                </div>
+                <input type="checkbox" id="history-toggle-checkbox" checked aria-label="Chat history tracking">
+            </div>
+        </div>
+    </div>
 </div>
 </body>
 </html>
