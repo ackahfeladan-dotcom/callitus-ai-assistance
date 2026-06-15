@@ -137,9 +137,28 @@ window.marked = undefined;
     transition: background 0.2s;
 }
 
+/* Force the sidebar settings layout action item to be visible */
+#settings-trigger-btn {
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    width: calc(100% - 24px) !important;
+    background: #212121 !important; /* Premium dark background button tint */
+    border: 1px solid #3a3a3a !important;
+    color: #ececec !important; /* Clear off-white text color */
+    padding: 12px 14px !important;
+    border-radius: 8px !important;
+    cursor: pointer !important;
+    font-size: 0.95em !important;
+    font-weight: 500 !important;
+    margin: 16px auto !important; /* Adds standard structural layout gaps */
+    position: relative !important;
+    z-index: 9999 !important;
+}
+
 #settings-trigger-btn:hover {
-    background: rgba(255, 255, 255, 0.05);
-}   
+    background: #2a2a2a !important;
+}
 
  /* Container that holds all previous chat items */
 .chat-history-list {
