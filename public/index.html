@@ -67,8 +67,9 @@ div[class*="content"], div[class*="wrapper"], div[class*="main"] {
 }
 /* 📱 EXACT CHATGPT MOBILE FULL-SCREEN SIDEBAR */
 @media (max-width: 768px) {
-    /* Make the mobile panel slide out almost full screen width */
+    /* Hide by default on mobile page load */
     .sidebar, [class*="sidebar"], aside {
+        display: none !important; /* <--- Add this line here */
         width: 85vw !important; 
         max-width: 320px !important;
         height: 100vh !important;
@@ -78,8 +79,12 @@ div[class*="content"], div[class*="wrapper"], div[class*="main"] {
         z-index: 99999 !important;
         padding: 20px 16px !important;
         box-sizing: border-box !important;
-        display: flex !important;
         flex-direction: column !important;
+    }
+
+    /* Keep the active class to show it when toggled */
+    .sidebar.active, [class*="sidebar"].active, aside.active {
+        display: flex !important;
     }
 
     /* Force all layout features inside it to take full width and stack properly */
@@ -87,7 +92,7 @@ div[class*="content"], div[class*="wrapper"], div[class*="main"] {
         display: flex !important;
         flex-direction: column !important;
         width: 100% !important;
-        gap: 12px !important; /* Forces perfect equal gaps between buttons */
+        gap: 12px !important;
         padding: 0 !important;
         margin: 16px 0 0 0 !important;
     }
@@ -95,13 +100,13 @@ div[class*="content"], div[class*="wrapper"], div[class*="main"] {
     /* Make individual buttons large, clear, and perfectly spaced */
     .sidebar a, .sidebar button, .sidebar li, [class*="sidebar"] div[role="button"] {
         width: 100% !important;
-        min-height: 48px !important; /* ChatGPT touch standard height */
+        min-height: 48px !important;
         padding: 12px 14px !important;
         margin: 0 !important;
         display: flex !important;
         align-items: center !important;
         gap: 12px !important;
-        font-size: 1.1em !important; /* Large, easy-to-read text */
+        font-size: 1.1em !important;
         border-radius: 8px !important;
         box-sizing: border-box !important;
         white-space: nowrap !important;
