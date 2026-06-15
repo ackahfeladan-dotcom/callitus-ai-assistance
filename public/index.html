@@ -1994,16 +1994,18 @@ if (settingsTriggerBtn) {
         }
     });
 }
-// Close settings modal overlay when clicking the × button
-const closeSettingsBtn = document.getElementById('close-settings-btn');
-if (closeSettingsBtn) {
-    closeSettingsBtn.addEventListener('click', () => {
-        const modalElement = document.getElementById('settings-modal');
-        if (modalElement) {
+
+// This forces the settings box to close when clicking the x button
+document.addEventListener('DOMContentLoaded', () => {
+    const closeBtn = document.getElementById('close-settings-btn');
+    const modalElement = document.getElementById('settings-modal');
+    
+    if (closeBtn && modalElement) {
+        closeBtn.addEventListener('click', () => {
             modalElement.style.display = 'none';
-        }
-    });
-}
+        });
+    }
+});
 </script>
 </div>
 
