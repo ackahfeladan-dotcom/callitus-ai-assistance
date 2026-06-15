@@ -64,12 +64,16 @@ window.marked = undefined;
 }
 
 #close-settings-btn {
-    background: none;
-    border: none;
-    color: #b4b4b4;
-    font-size: 1.5em;
-    cursor: pointer;
-    line-height: 1;
+    background: none !important;
+    border: none !important;
+    color: #ffffff !important; /* Forces the × to turn white */
+    font-size: 1.8em !important;
+    cursor: pointer !important;
+    line-height: 1 !important;
+    position: absolute !important;
+    top: 14px !important;
+    right: 20px !important;
+    z-index: 10000 !important;
 }
 
 #close-settings-btn:hover {
@@ -1990,7 +1994,16 @@ if (settingsTriggerBtn) {
         }
     });
 }
-
+// Close settings modal overlay when clicking the × button
+const closeSettingsBtn = document.getElementById('close-settings-btn');
+if (closeSettingsBtn) {
+    closeSettingsBtn.addEventListener('click', () => {
+        const modalElement = document.getElementById('settings-modal');
+        if (modalElement) {
+            modalElement.style.display = 'none';
+        }
+    });
+}
 </script>
 </div>
 
