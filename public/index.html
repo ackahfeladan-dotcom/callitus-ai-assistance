@@ -52,32 +52,18 @@ window.marked = undefined;
   background-color: #343541;
 }       
 
-/* ☀️ DEFAULT LIGHT MODE (White Theme) */
 body, html, main, #app, .app, .container, .chat-container, .main-content {
-    background-color: #ffffff !important;
-    color: #101214 !important;
-}
-div[class*="content"], div[class*="wrapper"], div[class*="main"] {
-    background-color: #ffffff !important;
-}
-.sidebar, [class*="sidebar"], aside {
-    background-color: #f9f9f9 !important;
-    border-right: 1px solid #e5e5e5 !important;
+    background-color: #171717 !important;
+    color: #ececec !important;
 }
 
-/* 🌙 AUTOMATIC DARK MODE (Deep ChatGPT Theme) */
-@media (prefers-color-scheme: dark) {
-    body, html, main, #app, .app, .container, .chat-container, .main-content {
-        background-color: #171717 !important;
-        color: #ececec !important;
-    }
-    div[class*="content"], div[class*="wrapper"], div[class*="main"] {
-        background-color: #171717 !important;
-    }
-    .sidebar, [class*="sidebar"], aside {
-        background-color: #0d0d0d !important;
-        border-right: 1px solid #2f2f2f !important;
-    }
+div[class*="content"], div[class*="wrapper"], div[class*="main"] {
+    background-color: #171717 !important;
+}
+
+.sidebar, [class*="sidebar"], aside {
+    background-color: #0d0d0d !important;
+    border-right: 1px solid #2f2f2f !important;
 }
 
  /* Container for multiline code blocks */
