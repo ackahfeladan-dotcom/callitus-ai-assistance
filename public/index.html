@@ -1197,239 +1197,239 @@ pre {
   letter-spacing: 0.5px;
 }
 /* ==========================================
-   CHATGPT-STYLE SETTINGS MODAL STYLES
+   UPDATED CHATGPT SETTINGS MULTI-TAB PANEL
    ========================================== */
 
-/* Full Screen Dimmed Overlay Background */
+/* Full Screen Dark Overlay Background */
 .modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
-  width: 100%;
-  height: 100%;
+  width: 100vw;
+  height: 100vh;
   background-color: rgba(0, 0, 0, 0.75);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 9999;
+  display: flex !important; /* Force browser display block */
+  align-items: center !important;
+  justify-content: center !important;
+  z-index: 9999 !important;
 }
 
-/* Main Modal Card Window Frame */
+/* Main Modal Window Box Frame */
 .modal-window {
-  background-color: #212121;
-  border: 1px solid #2f2f2f;
-  border-radius: 12px;
-  width: 100%;
-  max-width: 600px;
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
-  overflow: hidden;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background-color: #212121 !important;
+  border: 1px solid #2f2f2f !important;
+  border-radius: 12px !important;
+  width: 640px !important; /* Force a robust standard wide size */
+  max-width: 90vw !important;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5) !important;
+  overflow: hidden !important;
+  display: flex !important;
+  flex-direction: column !important;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
 }
 
-/* Header Banner Row */
+/* Header Area Banner Row */
 .modal-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 16px 24px;
-  border-bottom: 1px solid #2f2f2f;
-  background-color: #171717;
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  padding: 16px 24px !important;
+  border-bottom: 1px solid #2f2f2f !important;
+  background-color: #171717 !important;
 }
 
 .modal-header h2 {
-  color: #ececec;
-  font-size: 1.125rem;
-  margin: 0;
-  font-weight: 600;
+  color: #ececec !important;
+  font-size: 1.125rem !important;
+  margin: 0 !important;
+  font-weight: 600 !important;
 }
 
-/* X Close Button */
+/* X Close Action Button */
 .close-icon-btn {
-  background: none;
-  border: none;
-  color: #b4b4b4;
-  font-size: 24px;
-  cursor: pointer;
-  padding: 0;
-  line-height: 1;
-  transition: color 0.15s ease;
+  background: none !important;
+  border: none !important;
+  color: #b4b4b4 !important;
+  font-size: 24px !important;
+  cursor: pointer !important;
+  padding: 0 !important;
+  line-height: 1 !important;
 }
 
-.close-icon-btn:hover {
-  color: #ececec;
-}
-
-/* Two-Column Flex Container Layout */
+/* The Grid Container Splitting Columns */
 .modal-container {
-  display: flex;
-  height: 320px; 
-  background-color: #212121;
+  display: flex !important;
+  flex-direction: row !important; /* Explicitly forces elements side-by-side */
+  height: 320px !important;
+  width: 100% !important;
+  background-color: #212121 !important;
 }
 
-/* Left Sidebar Tab System Column */
+/* Left Sidebar Tab Navigation Menu Column */
 .modal-sidebar-tabs {
-  width: 170px;
-  padding: 16px 8px;
-  border-right: 1px solid #2f2f2f;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  background-color: #171717;
+  width: 180px !important; /* Fixed clear width layout boundary */
+  flex-shrink: 0 !important;
+  padding: 16px 8px !important;
+  border-right: 1px solid #2f2f2f !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 6px !important;
+  background-color: #171717 !important;
+  box-sizing: border-box !important;
 }
 
-/* Navigation Buttons Inside Sidebar */
+/* Sidebar Option Selectors */
 .tab-nav-btn {
-  background: none;
-  border: none;
-  color: #b4b4b4;
-  padding: 10px 12px;
-  text-align: left;
-  font-size: 0.875rem;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: all 0.15s ease;
-  font-weight: 500;
+  background: none !important;
+  border: none !important;
+  color: #b4b4b4 !important;
+  padding: 10px 12px !important;
+  text-align: left !important;
+  font-size: 0.875rem !important;
+  border-radius: 8px !important;
+  cursor: pointer !important;
+  font-weight: 500 !important;
+  width: 100% !important;
 }
 
 .tab-nav-btn:hover {
-  background-color: #212121;
-  color: #ececec;
+  background-color: #212121 !important;
+  color: #ececec !important;
 }
 
 .tab-nav-btn.active {
-  background-color: #2f2f2f;
-  color: #ececec;
+  background-color: #2f2f2f !important;
+  color: #ececec !important;
 }
 
-/* Right Content Main Panel Column */
+/* Right Content Area Dynamic Display Canvas */
 .modal-main-content {
-  flex: 1;
-  padding: 12px 24px;
-  overflow-y: auto;
+  flex: 1 !important; /* Dynamic sizing to take up remaining window card room */
+  padding: 16px 24px !important;
+  overflow-y: auto !important;
+  box-sizing: border-box !important;
+  background-color: #212121 !important;
 }
 
-/* Visibility Control for Inactive Tabs */
+/* Show-Hide Logic */
 .tab-panel-pane {
-  display: none;
+  display: none !important;
+  width: 100% !important;
 }
 
 .tab-panel-pane.active {
-  display: block;
+  display: block !important;
 }
 
-/* Setting Rows Padding and Lines */
+/* Content Element Option Rows Configuration */
 .setting-item-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 18px 0;
-  border-bottom: 1px solid #2f2f2f;
+  display: flex !important;
+  flex-direction: row !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  padding: 16px 0 !important;
+  border-bottom: 1px solid #2f2f2f !important;
+  width: 100% !important;
 }
 
 .setting-item-row:last-child {
-  border-bottom: none;
+  border-bottom: none !important;
 }
 
-/* Text Headers and Subheadings */
+/* Metadata Block Handling Layout Headers */
+.setting-text-meta {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: flex-start !important;
+  text-align: left !important;
+  padding-right: 16px !important;
+}
+
 .setting-text-meta h3 {
-  color: #ececec;
-  font-size: 0.95rem;
-  margin: 0 0 4px 0;
-  font-weight: 500;
+  color: #ececec !important;
+  font-size: 0.95rem !important;
+  margin: 0 0 4px 0 !important;
+  font-weight: 500 !important;
 }
 
 .setting-text-meta p {
-  color: #b4b4b4;
-  font-size: 0.85rem;
-  margin: 0;
-  padding-right: 12px;
-  line-height: 1.4;
+  color: #b4b4b4 !important;
+  font-size: 0.85rem !important;
+  margin: 0 !important;
+  line-height: 1.4 !important;
 }
 
-/* Delete Button Theme Styling */
+/* Permanent Dark Theme Active Badge Element */
+.theme-status-badge {
+  background-color: #1e293b !important;
+  color: #38bdf8 !important;
+  border: 1px solid #0369a1 !important;
+  padding: 6px 14px !important;
+  border-radius: 6px !important;
+  font-size: 0.85rem !important;
+  font-weight: 500 !important;
+  white-space: nowrap !important;
+}
+
+/* Delete Action Panel Buttons */
 .danger-action-btn {
-  background-color: #ef4444;
-  color: #ffffff;
-  border: none;
-  padding: 8px 16px;
-  border-radius: 6px;
-  font-size: 0.875rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: background-color 0.15s ease;
-  white-space: nowrap;
+  background-color: #ef4444 !important;
+  color: #ffffff !important;
+  border: none !important;
+  padding: 8px 16px !important;
+  border-radius: 6px !important;
+  font-size: 0.875rem !important;
+  font-weight: 500 !important;
+  cursor: pointer !important;
+  white-space: nowrap !important;
 }
 
 .danger-action-btn:hover {
-  background-color: #dc2626;
+  background-color: #dc2626 !important;
 }
 
-/* Premium Active Dark Mode Badge Styling */
-.theme-status-badge {
-  background-color: #1e293b;
-  color: #38bdf8;
-  border: 1px solid #0369a1;
-  padding: 6px 14px;
-  border-radius: 6px;
-  font-size: 0.85rem;
-  font-weight: 500;
-  white-space: nowrap;
-}
-
-/* ==========================================
-   CUSTOM SLIDER TOGGLE SWITCH COMPONENT
-   ========================================== */
+/* Premium Animated Toggle Switch Elements */
 .switch-toggle-label {
-  position: relative;
-  display: inline-block;
-  width: 44px;
-  height: 24px;
-  flex-shrink: 0;
+  position: relative !important;
+  display: inline-block !important;
+  width: 44px !important;
+  height: 24px !important;
+  flex-shrink: 0 !important;
 }
 
 .switch-toggle-label input {
-  opacity: 0;
-  width: 0;
-  height: 0;
+  opacity: 0 !important;
+  width: 0 !important;
+  height: 0 !important;
 }
 
 .switch-slider {
-  position: absolute;
-  cursor: pointer;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background-color: #4b5563;
-  transition: .2s ease;
-  border-radius: 24px;
+  position: absolute !important;
+  cursor: pointer !important;
+  top: 0; left: 0; right: 0; bottom: 0 !important;
+  background-color: #4b5563 !important;
+  transition: .2s ease !important;
+  border-radius: 24px !important;
 }
 
 .switch-slider:before {
-  position: absolute;
-  content: "";
-  height: 18px;
-  width: 18px;
-  left: 3px;
-  bottom: 3px;
-  background-color: #ffffff;
-  transition: .2s ease;
-  border-radius: 50%;
+  position: absolute !important;
+  content: "" !important;
+  height: 18px !important;
+  width: 18px !important;
+  left: 3px !important;
+  bottom: 3px !important;
+  background-color: #ffffff !important;
+  transition: .2s ease !important;
+  border-radius: 50% !important;
 }
 
 input:checked + .switch-slider {
-  background-color: #10b981; /* Premium AI Green color */
+  background-color: #10b981 !important;
 }
 
 input:checked + .switch-slider:before {
-  transform: translateX(20px);
-}
-.modal-window {
-  background-color: #212121;
-  border: 1px solid #2f2f2f;
-  border-radius: 12px;
-  width: 600px; /* Force an absolute width layout */
-  max-width: 90vw; /* Keeps it responsive on smaller monitors */
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
-  overflow: hidden;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  transform: translateX(20px) !important;
 }
 </style>
 </head>
