@@ -1245,17 +1245,40 @@ pre {
  </div>
 </div>
 
-<div id="input-area-container">
-    <div id="input-wrapper">
+<div id="input-wrapper">
+        <input type="file" id="file-upload" accept=".txt,.md" title="Upload document context">
+        <button type="button" id="upload-btn" aria-label="Upload document context">📎</button>
         <input type="text" id="user-input" placeholder="Message your custom assistant...">
         <button id="send-btn">Send</button>
-    </div>
-</div>
+      </div>
+      <div id="file-status"></div>
 
 <script>
     const chatContainer = document.getElementById('chat-container');
     const userInput = document.getElementById('user-input');
     const sendBtn = document.getElementById('send-btn');
+
+    // --- RAG FILE UPLOAD LOGIC ---
+let uploadedFileText = ""; 
+const fileUpload = document.getElementById('file-upload');
+const uploadBtn = document.getElementById('upload-btn');
+const fileStatus = document.getElementById('file-status');
+
+// 1. Make the paperclip button open the file selector window
+uploadBtn.addEventListener('click', () => fileUpload.click());
+
+// 2. Read the file contents as text when a file is selected
+fileUpload.addEventListener('change', (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = (evt) => {
+    uploadedFileText = evt.target.result;
+    fileStatus.innerText = `📎 Attached: ${file.name}`;
+  };
+  reader.readAsText(file);
+});
 
     // Inject clean, modern ChatGPT typography styles directly into the document
     if (!document.getElementById('chatgpt-ui-styles')) {
@@ -1432,12 +1455,20 @@ function copyBlockContent(buttonElement) {
         const aiContentElement = appendRow('', 'ai-wrapper', 'ai-content', 'Assistant');
 
         try {
-            const response = await fetch('/api/chat', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ message: text, history: chatHistory })
-            });
+ const response = await fetch('/api/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ 
+        message: text, 
+        history: chatHistory,
+        fileContext: uploadedFileText 
+      })
+    });
 
+    // Reset document attachments locally now that the payload has transferred
+    uploadedFileText = "";
+    if (document.getElementById('file-upload')) document.getElementById('file-upload').value = "";
+    if (document.getElementById('file-status')) document.getElementById('file-status').innerText = "";
             if (!response.ok) throw new Error("Backend route non-responsive");
 
             const reader = response.body.getReader();
