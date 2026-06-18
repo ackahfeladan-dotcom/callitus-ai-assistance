@@ -1245,14 +1245,16 @@ pre {
  </div>
 </div>
 
-<div id="input-wrapper">
-        <input type="file" id="file-upload" accept=".txt,.md" title="Upload document context">
+<div id="input-area-container">
+      <div id="input-wrapper">
+        <!-- Using the 'hidden' attribute to hide the native button cleanly -->
+        <input type="file" id="file-upload" accept=".txt,.md" title="Upload document context" hidden>
         <button type="button" id="upload-btn" aria-label="Upload document context">📎</button>
         <input type="text" id="user-input" placeholder="Message your custom assistant...">
         <button id="send-btn">Send</button>
       </div>
       <div id="file-status"></div>
-
+    </div>
 <script>
     const chatContainer = document.getElementById('chat-container');
     const userInput = document.getElementById('user-input');
